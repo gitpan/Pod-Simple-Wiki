@@ -1,7 +1,8 @@
-Makefile.PL
-CHANGES
+Changes
 MANIFEST
 META.yml
+Makefile.PL
+README
 
 pod2wiki
 
@@ -11,9 +12,16 @@ examples/pod2wiki.pl
 examples/pod2wiki_simple.pl
 
 t/00_load.t
-t/01_format_01_wiki.t
-t/01_format_02_kwiki.t
-t/01_format_03_usemod.t
-t/01_head_02_kwiki.t
-t/01_head_02_usemod.t
-t/01_head_02_wiki.t
+t/01_format_kwiki.t
+t/01_format_twiki.t
+t/01_format_usemod.t
+t/01_format_wiki.t
+t/02_head_kwiki.t
+t/02_head_twiki.t
+t/02_head_usemod.t
+t/02_head_wiki.t
+t/03_lists_kwiki.t
+t/03_lists_twiki.t
+t/03_lists_usemod.t
+t/03_lists_wiki.t
+t/03_lists_wikipedia.t

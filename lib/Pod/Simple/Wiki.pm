@@ -5,7 +5,7 @@ package Pod::Simple::Wiki;
 # Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 #
 #
-# Copyright 2003-2004, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2005, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
@@ -16,7 +16,7 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 my $_debug = 0;
 
@@ -86,7 +86,7 @@ my %tags = (
                                     '</h3>'  => " ===\n",
                                     '<h4>'   => "\n==== ",
                                     '</h4>'  => " ====\n\n",
-                            },
+                                },
 
                 'usemod_classic' => {
                                     '<b>'    => "'''",
@@ -106,9 +106,49 @@ my %tags = (
                                     '</h3>'  => " ===\n",
                                     '<h4>'   => "\n==== ",
                                     '</h4>'  => " ====\n\n",
-                            },
+                                },
 
+
+               'twiki'       => {
+                                    '<b>'    => "*",
+                                    '</b>'   => "*",
+                                    '<i>'    => "_",
+                                    '</i>'   => "_",
+                                    '<tt>'   => '=',
+                                    '</tt>'  => '=',
+                                    '<pre>'  => "\n<verbatim>\n",
+                                    '</pre>' => "\n</verbatim>\n\n",
+
+                                    '<h1>'   => "---+ ",
+                                    '</h1>'  => "\n\n",
+                                    '<h2>'   => "---++ ",
+                                    '</h2>'  => "\n\n",
+                                    '<h3>'   => "---+++ ",
+                                    '</h3>'  => "\n\n",
+                                    '<h4>'   => "---++++ ",
+                                    '</h4>'  => "\n\n",
+                                },
+                'wikipedia' =>  {
+                                    '<b>'    => "'''",
+                                    '</b>'   => "'''",
+                                    '<i>'    => "''",
+                                    '</i>'   => "''",
+                                    '<tt>'   => '<tt>',
+                                    '</tt>'  => '</tt>',
+                                    '<pre>'  => "\n<code>\n",
+                                    '</pre>' => "\n</code>\n",
+
+                                    '<h1>'   => "==",
+                                    '</h1>'  => "==\n",
+                                    '<h2>'   => "===",
+                                    '</h2>'  => "===\n",
+                                    '<h3>'   => "====",
+                                    '</h3>'  => "====\n",
+                                    '<h4>'   => "=====",
+                                    '</h4>'  => "=====\n",
+                                },
 );
+
 
 ###############################################################################
 #
@@ -120,6 +160,7 @@ sub new {
 
     my $class               = shift;
     my $format              = lc shift || 'wiki';
+       $format              = 'wikipedia' if $format eq 'mediawiki';
        $format              = 'wiki' unless exists $tags{$format};
 
     my $self                = Pod::Simple->new(@_);
@@ -183,25 +224,27 @@ sub _indent_item {
     if ($self->{_format} eq 'wiki') {
 
         if    ($item_type eq 'bullet') {
-             $self->_append(("\t" x $indent_level) . '*');
+             $self->_append("*" x $indent_level);
+             # This was the way C2 Wiki used to define a bullet list
+             # $self->_append("\t" x $indent_level . '*');
         }
         elsif ($item_type eq 'number') {
-             $self->_append(("\t" x $indent_level) . $item_param);
+             $self->_append("\t" x $indent_level . $item_param);
         }
         elsif ($item_type eq 'text') {
-             $self->_append(("\t" x $indent_level));
+             $self->_append("\t" x $indent_level);
         }
     }
     elsif ($self->{_format} eq 'kwiki') {
 
         if    ($item_type eq 'bullet') {
-             $self->_append(('*' x $indent_level) . ' ');
+             $self->_append('*' x $indent_level . ' ');
         }
         elsif ($item_type eq 'number') {
-             $self->_append(('0' x $indent_level) . ' ');
+             $self->_append('0' x $indent_level . ' ');
         }
         elsif ($item_type eq 'text') {
-             # Kwiki doesn't have a text list yet
+             $self->_append(";" x $indent_level . ' ');
         }
     }
     elsif ($self->{_format} eq 'usemod') {
@@ -214,6 +257,30 @@ sub _indent_item {
         }
         elsif ($item_type eq 'text') {
              $self->_append(";" x $indent_level);
+        }
+    }
+    elsif ($self->{_format} eq 'twiki') {
+
+        if    ($item_type eq 'bullet') {
+             $self->_append('   ' x $indent_level . "* ");
+        }
+        elsif ($item_type eq 'number') {
+             $self->_append('   ' x $indent_level . $item_param . ". ");
+        }
+        elsif ($item_type eq 'text') {
+             $self->_append('   ' x $indent_level . '$ ' );
+        }
+    }
+    elsif ($self->{_format} eq 'wikipedia') {
+
+        if    ($item_type eq 'bullet') {
+             $self->_append('*' x $indent_level . ' ');
+        }
+        elsif ($item_type eq 'number') {
+             $self->_append('#' x $indent_level . ' ');
+        }
+        elsif ($item_type eq 'text') {
+             $self->_append(";" x $indent_level . ' ');
         }
     }
 }
@@ -427,8 +494,10 @@ sub _start_item_text   {$_[0]->_indent_item('text')}
 sub _end_item_bullet   {$_[0]->_output("\n")}
 sub _end_item_number   {$_[0]->_output("\n")}
 sub _end_item_text     {$_[0]->_output(":\t") if $_[0]->{_format} eq 'wiki';
-                        $_[0]->_output(" "  ) if $_[0]->{_format} eq 'kwiki';
-                        $_[0]->_output(":"  ) if $_[0]->{_format} eq 'usemod';}
+                        $_[0]->_output(" ; ") if $_[0]->{_format} eq 'kwiki';
+                        $_[0]->_output(":"  ) if $_[0]->{_format} eq 'usemod';
+                        $_[0]->_output(": " ) if $_[0]->{_format} eq 'twiki';
+                        $_[0]->_output(" : ") if $_[0]->{_format} eq 'wikipedia';}
 
 sub _start_over_block  {$_[0]->{_item_indent}++}
 sub _end_over_block    {$_[0]->{_item_indent}--}
@@ -471,7 +540,7 @@ sub _end_Para {
     # Only add a newline if the paragraph isn't part of a text
     if ($self->{_in_over_text}) {
         # Workaround for the fact that Kwiki doesn't have a definition block
-        $self->_output("\n") if $self->{_format} eq 'kwiki';
+        #$self->_output("\n") if $self->{_format} eq 'kwiki';
     }
     else {
         $self->_output("\n");
@@ -524,9 +593,12 @@ To create a simple C<pod2wiki> filter:
 
 The C<Pod::Simple::Wiki> module is used for converting Pod text to Wiki text.
 
+Pod (Plain Old Documentation) is a simple markup language used for writing Perl documentation.
+
 A Wiki is a user extensible web site. It uses very simple mark-up that is converted to Html.
 
-For an introduction to Wikis see: http://c2.com/cgi/wiki?WikiGettingStartedFaq and http://c2.com/cgi/wiki?WikiWikiWebFaq
+For an introduction to Wikis see: http://en.wikipedia.org/wiki/Wiki
+
 
 =head1 METHODS
 
@@ -554,6 +626,14 @@ This is the format as used by Brian Ingerson's CGI::Kwiki: http://search.cpan.or
 
 This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/wiki.pl?WikiFormat
 
+=item twiki
+
+This is the format used by TWiki wikis.  See: http://www.twiki.org/
+
+=item wikipedia or mediawiki
+
+This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.wikipedia.org/
+
 =back
 
 If no format is specified the parser defaults to C<wiki>.
@@ -576,7 +656,11 @@ Add more code, more tests and a few more users if possible.
 
 =item *
 
-Add other Wiki formats such as TWiki and Wikipedia.
+Add other Wiki formats. Send requests or patches.
+
+=item *
+
+Fix some of the C<=over> edge cases. See the TODOs in the test programs.
 
 =back
 
@@ -586,9 +670,14 @@ Add other Wiki formats such as TWiki and Wikipedia.
 
 This module also installs a C<pod2wiki> command line utility. See C<pod2wiki --help> for details.
 
+
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Sean M. Burke for C<Pod::Simple>. It may not be simple but sub-classing it is. C<:-)>
+
+Thanks to Sam Tregar for TWiki support.
+
+Thanks Tony Sidaway for Wikipedia/MediaWiki support.
 
 
 =head1 AUTHOR
@@ -598,7 +687,7 @@ John McNamara jmcnamara@cpan.org
 
 =head1 COPYRIGHT
 
-© MMIII-MMIV, John McNamara.
+© MMIII-MMV, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.
 

@@ -1,0 +1,15 @@
+Revision history for Pod::Simple::Wiki.
+
+0.03  Mon July 21 2003
+	- First CPAN release.
+    - Added usemod support.
+
+0.02  Wed May 21 2003
+	- First release to pod-people mailing list.
+    - Added Kwiki support. 
+
+0.01  Wed May 21 2003
+	- Initial version.
+    - c2wiki support.
+
+

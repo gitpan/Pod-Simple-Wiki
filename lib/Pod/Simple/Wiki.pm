@@ -5,7 +5,7 @@ package Pod::Simple::Wiki;
 # Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 #
 #
-# Copyright 2003, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2004, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
@@ -16,7 +16,7 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 my $_debug = 0;
 
@@ -64,7 +64,7 @@ my %tags = (
                                     '</h2>'  => " ==\n\n",
                                     '<h3>'   => "\n=== ",
                                     '</h3>'  => " ===\n\n",
-                                    '<h4>'   => "====\n",
+                                    '<h4>'   => "==== ",
                                     '</h4>'  => "\n\n",
                                 },
 
@@ -126,7 +126,7 @@ sub new {
        $self->{_wiki_text}  = '';
        $self->{_format}     = $format;
        $self->{_tags}       = $tags{$format};
-       $self->{_filehandle} = $self->{output_fh} || *STDOUT{IO};
+       $self->{output_fh} ||= *STDOUT{IO};
 
     bless  $self, $class;
     return $self;
@@ -161,7 +161,7 @@ sub _output {
 
     $text = '' unless defined $text;
 
-    print {$self->{_filehandle}} $self->{_wiki_text}, $text;
+    print {$self->{output_fh}} $self->{_wiki_text}, $text;
 
     $self->{_wiki_text} = '';
 }
@@ -366,12 +366,12 @@ sub _handle_text {
 sub _start_I  {$_[0]->_append_tag('<i>')   unless $_[0]->_skip_headings()}
 sub _start_B  {$_[0]->_append_tag('<b>')   unless $_[0]->_skip_headings()}
 sub _start_C  {$_[0]->_append_tag('<tt>')  unless $_[0]->_skip_headings()}
-sub _start_F  {$_[0]->start_I}
+sub _start_F  {$_[0]->_start_I}
 
 sub _end_I    {$_[0]->_append_tag('</i>')  unless $_[0]->_skip_headings()}
 sub _end_B    {$_[0]->_append_tag('</b>')  unless $_[0]->_skip_headings()}
 sub _end_C    {$_[0]->_append_tag('</tt>') unless $_[0]->_skip_headings()}
-sub _end_F    {$_[0]->end_I}
+sub _end_F    {$_[0]->_end_I}
 
 
 ###############################################################################
@@ -572,22 +572,19 @@ Pod::Simple::Wiki inherits all of the methods of L<Pod::Simple>. See L<Pod::Simp
 
 =item *
 
-A lot more work. This is a first release.
-
-=item *
-
-Add tests.
+Add more code, more tests and a few more users if possible.
 
 =item *
 
 Add other Wiki formats such as TWiki and Wikipedia.
 
-=item *
-
-Add a robust C<pod2wiki> utility.
-
 =back
 
+
+
+=head1 SEE ALSO
+
+This module also installs a C<pod2wiki> command line utility. See C<pod2wiki --help> for details.
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -601,7 +598,7 @@ John McNamara jmcnamara@cpan.org
 
 =head1 COPYRIGHT
 
-© MMIII, John McNamara.
+© MMIII-MMIV, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.
 

@@ -2,7 +2,8 @@
 
 #######################################################################
 #
-# Simple pod2wiki filter demo.
+# A simple pod2wiki filter demo. See pod2wiki.pl for a more complete
+# utility.
 #
 # reverse('©'), May 2003, John McNamara, jmcnamara@cpan.org
 #

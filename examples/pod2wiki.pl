@@ -105,6 +105,18 @@ This is the format as used by Brian Ingerson's CGI::Kwiki: http://search.cpan.or
 
 This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/wiki.pl?WikiFormat
 
+=item twiki
+
+This is the format used by TWiki wikis.  See: http://www.twiki.org/
+
+=item wikipedia or mediawiki
+
+This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.wikipedia.org/
+
+=item moinmoin
+
+This is the format used by MoinMoin wikis.  See: http://moinmoin.wikiwikiweb.de/
+
 =back
 
 

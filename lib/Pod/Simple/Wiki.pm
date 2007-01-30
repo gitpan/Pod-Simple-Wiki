@@ -5,7 +5,7 @@ package Pod::Simple::Wiki;
 # Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 #
 #
-# Copyright 2003-2005, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2007, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
@@ -16,7 +16,7 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 my $_debug = 0;
 
@@ -147,6 +147,28 @@ my %tags = (
                                     '<h4>'   => "=====",
                                     '</h4>'  => "=====\n",
                                 },
+
+
+                'moinmoin' =>   {
+                                    '<b>'    => "'''",
+                                    '</b>'   => "'''",
+                                    '<i>'    => "''",
+                                    '</i>'   => "''",
+                                    '<tt>'   => '`',
+                                    '</tt>'  => '`',
+                                    '<pre>'  => "\n{{{\n",
+                                    '</pre>' => "\n}}}\n",
+
+
+                                    '<h1>'   => "\n== ",
+                                    '</h1>'  => " ==\n\n",
+                                    '<h2>'   => "\n=== ",
+                                    '</h2>'  => " ===\n\n",
+                                    '<h3>'   => "\n==== ",
+                                    '</h3>'  => " ====\n\n",
+                                    '<h4>'   => "\n===== ",
+                                    '</h4>'  => " =====\n\n",
+                                },
 );
 
 
@@ -158,16 +180,18 @@ my %tags = (
 #
 sub new {
 
-    my $class               = shift;
-    my $format              = lc shift || 'wiki';
-       $format              = 'wikipedia' if $format eq 'mediawiki';
-       $format              = 'wiki' unless exists $tags{$format};
+    my $class                   = shift;
+    my $format                  = lc shift || 'wiki';
+       $format                  = 'wikipedia' if $format eq 'mediawiki';
+       $format                  = 'moinmoin'  if $format eq 'moin';
+       $format                  = 'wiki' unless exists $tags{$format};
 
-    my $self                = Pod::Simple->new(@_);
-       $self->{_wiki_text}  = '';
-       $self->{_format}     = $format;
-       $self->{_tags}       = $tags{$format};
-       $self->{output_fh} ||= *STDOUT{IO};
+    my $self                    = Pod::Simple->new(@_);
+       $self->{_wiki_text}      = '';
+       $self->{_format}         = $format;
+       $self->{_tags}           = $tags{$format};
+       $self->{output_fh}     ||= *STDOUT{IO};
+       $self->{_item_indent}    = 0;
 
     bless  $self, $class;
     return $self;
@@ -283,6 +307,22 @@ sub _indent_item {
              $self->_append(";" x $indent_level . ' ');
         }
     }
+    elsif ($self->{_format} eq 'moinmoin') {
+
+
+        if    ($item_type eq 'bullet') {
+             $self->_append(' ' x $indent_level . "* ");
+        }
+        elsif ($item_type eq 'number') {
+             $self->_append(' ' x $indent_level . "1. ");
+        }
+        elsif ($item_type eq 'text') {
+             $self->_append(' ' x $indent_level);
+        }
+
+        $self->{_moinmoin_list} = 1;
+
+    }
 }
 
 
@@ -349,7 +389,7 @@ sub _handle_element_start {
 
     $element =~ tr/-/_/;
 
-    print "<$element>\n" if $_debug;
+    print '    ' x  $self->{_item_indent}, "<$element>\n" if $_debug;
 
     $self->{"_in_". $element}++;
 
@@ -379,7 +419,7 @@ sub _handle_element_end {
 
     $self->{"_in_". $element}--;
 
-    print "</$element>\n" if $_debug;
+    print "\n", '    ' x  $self->{_item_indent}, "</$element>\n\n" if $_debug;
 }
 
 
@@ -497,7 +537,10 @@ sub _end_item_text     {$_[0]->_output(":\t") if $_[0]->{_format} eq 'wiki';
                         $_[0]->_output(" ; ") if $_[0]->{_format} eq 'kwiki';
                         $_[0]->_output(":"  ) if $_[0]->{_format} eq 'usemod';
                         $_[0]->_output(": " ) if $_[0]->{_format} eq 'twiki';
-                        $_[0]->_output(" : ") if $_[0]->{_format} eq 'wikipedia';}
+                        $_[0]->_output(" : ") if $_[0]->{_format} eq 'wikipedia';
+                        $_[0]->_output(":: ") if $_[0]->{_format} eq 'moinmoin';
+                        $_[0]->{_moinmoin_list} = 0
+                       }
 
 sub _start_over_block  {$_[0]->{_item_indent}++}
 sub _end_over_block    {$_[0]->{_item_indent}--}
@@ -522,6 +565,26 @@ sub _start_Para {
         elsif ($self->{_format} eq 'usemod') {
             $self->_append(":" x $indent_level);
         }
+        elsif ($self->{_format} eq 'moinmoin') {
+            $self->_append(' ' x $indent_level);
+        }
+    }
+
+
+    if ($self->{_moinmoin_list}) {
+        if (not $self->{_in_over_text} and $self->{_moinmoin_list} == 1) {
+             $self->_append("\n");
+        }
+
+        if ($self->{_in_over_text} and $self->{_moinmoin_list} == 2) {
+             $self->_append("\n");
+        }
+
+        if (not ($self->{_in_over_text} and $self->{_moinmoin_list} == 1)) {
+             $self->_append(' ' x $indent_level);
+        }
+
+        $self->{_moinmoin_list}++;
     }
 }
 
@@ -634,6 +697,10 @@ This is the format used by TWiki wikis.  See: http://www.twiki.org/
 
 This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.wikipedia.org/
 
+=item moinmoin
+
+This is the format used by MoinMoin wikis.  See: http://moinmoin.wikiwikiweb.de/
+
 =back
 
 If no format is specified the parser defaults to C<wiki>.
@@ -679,6 +746,8 @@ Thanks to Sam Tregar for TWiki support.
 
 Thanks Tony Sidaway for Wikipedia/MediaWiki support.
 
+Thanks to Michael Matthews for MoinMoin support.
+
 
 =head1 AUTHOR
 
@@ -687,7 +756,6 @@ John McNamara jmcnamara@cpan.org
 
 =head1 COPYRIGHT
 
-© MMIII-MMV, John McNamara.
+© MMIII-MMVII, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.
-

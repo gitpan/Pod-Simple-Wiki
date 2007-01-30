@@ -1,5 +1,11 @@
 Revision history for Pod::Simple::Wiki.
 
+
+0.06 January 30 2007
+
+    + Added MoinMoin support (Michael Matthews)
+
+
 0.05 March 30 2005
 
     + Added support for TWiki formatting (Sam Tregar)

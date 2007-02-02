@@ -16,160 +16,32 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.06';
-
-my $_debug = 0;
+$VERSION = '0.07';
 
 
 ###############################################################################
-###############################################################################
 #
-# The tag mappings for various Wiki text formats
+# The tag to wiki mappings.
 #
+my $tags = {
+            '<b>'    => "'''",
+            '</b>'   => "'''",
+            '<i>'    => "''",
+            '</i>'   => "''",
+            '<tt>'   => '"',
+            '</tt>'  => '"',
+            '<pre>'  => '',
+            '</pre>' => "\n\n",
 
-my %tags = (
-                'wiki' =>       {
-                                    '<b>'    => "'''",
-                                    '</b>'   => "'''",
-                                    '<i>'    => "''",
-                                    '</i>'   => "''",
-                                    '<tt>'   => '"',
-                                    '</tt>'  => '"',
-                                    '<pre>'  => '',
-                                    '</pre>' => "\n\n",
-
-                                    '<h1>'   => "\n----\n'''",
-                                    '</h1>'  => "'''\n\n",
-                                    '<h2>'   => "\n'''''",
-                                    '</h2>'  => "'''''\n\n",
-                                    '<h3>'   => "\n''",
-                                    '</h3>'  => "''\n\n",
-                                    '<h4>'   => "\n",
-                                    '</h4>'  => "\n\n",
-                                },
-
-                'kwiki' =>      {
-                                    '<b>'    => '*',
-                                    '</b>'   => '*',
-                                    '<i>'    => '/',
-                                    '</i>'   => '/',
-                                    '<tt>'   => '[=',
-                                    '</tt>'  => ']',
-                                    '<pre>'  => '',
-                                    '</pre>' => "\n\n",
-
-                                    '<h1>'   => "\n----\n= ",
-                                    '</h1>'  => " =\n\n",
-                                    '<h2>'   => "\n== ",
-                                    '</h2>'  => " ==\n\n",
-                                    '<h3>'   => "\n=== ",
-                                    '</h3>'  => " ===\n\n",
-                                    '<h4>'   => "==== ",
-                                    '</h4>'  => "\n\n",
-                                },
-
-                'usemod' =>     {
-                                    '<b>'    => '<b>',
-                                    '</b>'   => '</b>',
-                                    '<i>'    => '<i>',
-                                    '</i>'   => '</i>',
-                                    '<tt>'   => '<tt>',
-                                    '</tt>'  => '</tt>',
-                                    '<pre>'  => "\n<pre>\n",
-                                    '</pre>' => "\n</pre>\n\n",
-
-                                    '<h1>'   => "\n= ",
-                                    '</h1>'  => " =\n\n",
-                                    '<h2>'   => "\n== ",
-                                    '</h2>'  => " ==\n\n",
-                                    '<h3>'   => "\n=== ",
-                                    '</h3>'  => " ===\n",
-                                    '<h4>'   => "\n==== ",
-                                    '</h4>'  => " ====\n\n",
-                                },
-
-                'usemod_classic' => {
-                                    '<b>'    => "'''",
-                                    '</b>'   => "'''",
-                                    '<i>'    => "''",
-                                    '</i>'   => "''",
-                                    '<tt>'   => '<tt>',
-                                    '</tt>'  => '</tt>',
-                                    '<pre>'  => "\n<pre>\n",
-                                    '</pre>' => "\n</pre>\n\n",
-
-                                    '<h1>'   => "\n= ",
-                                    '</h1>'  => " =\n\n",
-                                    '<h2>'   => "\n== ",
-                                    '</h2>'  => " ==\n\n",
-                                    '<h3>'   => "\n=== ",
-                                    '</h3>'  => " ===\n",
-                                    '<h4>'   => "\n==== ",
-                                    '</h4>'  => " ====\n\n",
-                                },
-
-
-               'twiki'       => {
-                                    '<b>'    => "*",
-                                    '</b>'   => "*",
-                                    '<i>'    => "_",
-                                    '</i>'   => "_",
-                                    '<tt>'   => '=',
-                                    '</tt>'  => '=',
-                                    '<pre>'  => "\n<verbatim>\n",
-                                    '</pre>' => "\n</verbatim>\n\n",
-
-                                    '<h1>'   => "---+ ",
-                                    '</h1>'  => "\n\n",
-                                    '<h2>'   => "---++ ",
-                                    '</h2>'  => "\n\n",
-                                    '<h3>'   => "---+++ ",
-                                    '</h3>'  => "\n\n",
-                                    '<h4>'   => "---++++ ",
-                                    '</h4>'  => "\n\n",
-                                },
-                'wikipedia' =>  {
-                                    '<b>'    => "'''",
-                                    '</b>'   => "'''",
-                                    '<i>'    => "''",
-                                    '</i>'   => "''",
-                                    '<tt>'   => '<tt>',
-                                    '</tt>'  => '</tt>',
-                                    '<pre>'  => "\n<code>\n",
-                                    '</pre>' => "\n</code>\n",
-
-                                    '<h1>'   => "==",
-                                    '</h1>'  => "==\n",
-                                    '<h2>'   => "===",
-                                    '</h2>'  => "===\n",
-                                    '<h3>'   => "====",
-                                    '</h3>'  => "====\n",
-                                    '<h4>'   => "=====",
-                                    '</h4>'  => "=====\n",
-                                },
-
-
-                'moinmoin' =>   {
-                                    '<b>'    => "'''",
-                                    '</b>'   => "'''",
-                                    '<i>'    => "''",
-                                    '</i>'   => "''",
-                                    '<tt>'   => '`',
-                                    '</tt>'  => '`',
-                                    '<pre>'  => "\n{{{\n",
-                                    '</pre>' => "\n}}}\n",
-
-
-                                    '<h1>'   => "\n== ",
-                                    '</h1>'  => " ==\n\n",
-                                    '<h2>'   => "\n=== ",
-                                    '</h2>'  => " ===\n\n",
-                                    '<h3>'   => "\n==== ",
-                                    '</h3>'  => " ====\n\n",
-                                    '<h4>'   => "\n===== ",
-                                    '</h4>'  => " =====\n\n",
-                                },
-);
+            '<h1>'   => "\n----\n'''",
+            '</h1>'  => "'''\n\n",
+            '<h2>'   => "\n'''''",
+            '</h2>'  => "'''''\n\n",
+            '<h3>'   => "\n''",
+            '</h3>'  => "''\n\n",
+            '<h4>'   => "\n",
+            '</h4>'  => "\n\n",
+           };
 
 
 ###############################################################################
@@ -182,19 +54,43 @@ sub new {
 
     my $class                   = shift;
     my $format                  = lc shift || 'wiki';
-       $format                  = 'wikipedia' if $format eq 'mediawiki';
+       $format                  = 'mediawiki' if $format eq 'wikipedia';
        $format                  = 'moinmoin'  if $format eq 'moin';
-       $format                  = 'wiki' unless exists $tags{$format};
+
+    my $module                  = "Pod::Simple::Wiki::" . ucfirst $format;
+
+    # Try to load a sub-module unless the format type is 'wiki' in which
+    # case we use this, the parent, module. It's a design pattern, bitches!
+    if ($format ne 'wiki') {
+        eval "require $module";
+        die "Module $module not implemented for wiki format $format\n" if $@;
+        return $module->new(@_);
+    }
 
     my $self                    = Pod::Simple->new(@_);
        $self->{_wiki_text}      = '';
-       $self->{_format}         = $format;
-       $self->{_tags}           = $tags{$format};
+       $self->{_tags}           = $tags;
        $self->{output_fh}     ||= *STDOUT{IO};
        $self->{_item_indent}    = 0;
+       $self->{_debug}          = 0;
 
     bless  $self, $class;
     return $self;
+}
+
+
+###############################################################################
+#
+# _debug()
+#
+# Sets the debug flag for some Pod::Simple::Wiki debugging. See also the
+# Pod::Simple::Debug module.
+#
+sub _debug {
+
+    my $self = shift;
+
+    $self->{_debug} = $_[0];
 }
 
 
@@ -245,83 +141,16 @@ sub _indent_item {
     my $item_param   = $_[1];
     my $indent_level = $self->{_item_indent};
 
-    if ($self->{_format} eq 'wiki') {
-
-        if    ($item_type eq 'bullet') {
-             $self->_append("*" x $indent_level);
-             # This was the way C2 Wiki used to define a bullet list
-             # $self->_append("\t" x $indent_level . '*');
-        }
-        elsif ($item_type eq 'number') {
-             $self->_append("\t" x $indent_level . $item_param);
-        }
-        elsif ($item_type eq 'text') {
-             $self->_append("\t" x $indent_level);
-        }
+    if    ($item_type eq 'bullet') {
+         $self->_append("*" x $indent_level);
+         # This was the way C2 Wiki used to define a bullet list
+         # $self->_append("\t" x $indent_level . '*');
     }
-    elsif ($self->{_format} eq 'kwiki') {
-
-        if    ($item_type eq 'bullet') {
-             $self->_append('*' x $indent_level . ' ');
-        }
-        elsif ($item_type eq 'number') {
-             $self->_append('0' x $indent_level . ' ');
-        }
-        elsif ($item_type eq 'text') {
-             $self->_append(";" x $indent_level . ' ');
-        }
+    elsif ($item_type eq 'number') {
+         $self->_append("\t" x $indent_level . $item_param);
     }
-    elsif ($self->{_format} eq 'usemod') {
-
-        if    ($item_type eq 'bullet') {
-             $self->_append('*' x $indent_level);
-        }
-        elsif ($item_type eq 'number') {
-             $self->_append('#' x $indent_level);
-        }
-        elsif ($item_type eq 'text') {
-             $self->_append(";" x $indent_level);
-        }
-    }
-    elsif ($self->{_format} eq 'twiki') {
-
-        if    ($item_type eq 'bullet') {
-             $self->_append('   ' x $indent_level . "* ");
-        }
-        elsif ($item_type eq 'number') {
-             $self->_append('   ' x $indent_level . $item_param . ". ");
-        }
-        elsif ($item_type eq 'text') {
-             $self->_append('   ' x $indent_level . '$ ' );
-        }
-    }
-    elsif ($self->{_format} eq 'wikipedia') {
-
-        if    ($item_type eq 'bullet') {
-             $self->_append('*' x $indent_level . ' ');
-        }
-        elsif ($item_type eq 'number') {
-             $self->_append('#' x $indent_level . ' ');
-        }
-        elsif ($item_type eq 'text') {
-             $self->_append(";" x $indent_level . ' ');
-        }
-    }
-    elsif ($self->{_format} eq 'moinmoin') {
-
-
-        if    ($item_type eq 'bullet') {
-             $self->_append(' ' x $indent_level . "* ");
-        }
-        elsif ($item_type eq 'number') {
-             $self->_append(' ' x $indent_level . "1. ");
-        }
-        elsif ($item_type eq 'text') {
-             $self->_append(' ' x $indent_level);
-        }
-
-        $self->{_moinmoin_list} = 1;
-
+    elsif ($item_type eq 'text') {
+         $self->_append("\t" x $indent_level);
     }
 }
 
@@ -336,13 +165,7 @@ sub _skip_headings {
 
     my $self = shift;
 
-    return (
-            $self->{_format} eq 'kwiki' and
-            ($self->{_in_head1} or
-             $self->{_in_head2} or
-             $self->{_in_head3} or
-             $self->{_in_head4})
-           );
+    return 0;
 }
 
 
@@ -389,7 +212,9 @@ sub _handle_element_start {
 
     $element =~ tr/-/_/;
 
-    print '    ' x  $self->{_item_indent}, "<$element>\n" if $_debug;
+    if ($self->{_debug}) {
+        print '    ' x  $self->{_item_indent}, "<$element>\n";
+    }
 
     $self->{"_in_". $element}++;
 
@@ -419,7 +244,9 @@ sub _handle_element_end {
 
     $self->{"_in_". $element}--;
 
-    print "\n", '    ' x  $self->{_item_indent}, "</$element>\n\n" if $_debug;
+    if ($self->{_debug}) {
+        print "\n", '    ' x  $self->{_item_indent}, "</$element>\n\n";
+    }
 }
 
 
@@ -435,31 +262,15 @@ sub _handle_text {
     my $self = shift;
     my $text = $_[0];
 
-    # Only escape CamelCase in Kwiki paragraphs
-    if ($self->{_format} eq 'kwiki' and not $self->{_in_Para}) {
-        $self->{_wiki_text} .= $text;
-        return;
-    }
-
     # Split the text into tokens but maintain the whitespace
     my @tokens = split /(\s+)/, $text;
 
-    if ($self->{_format} eq 'wiki') {
-        for (@tokens) {
-            next unless /\S/;                    # Ignore the whitespace
-            next if m[^(ht|f)tp://];             # Ignore URLs
-            s/([A-Z][a-z]+)(?=[A-Z])/$1''''''/g  # Escape with 6 single quotes
+    for (@tokens) {
+        next unless /\S/;                    # Ignore the whitespace
+        next if m[^(ht|f)tp://];             # Ignore URLs
+        s/([A-Z][a-z]+)(?=[A-Z])/$1''''''/g  # Escape with 6 single quotes
 
-        }
     }
-    elsif ($self->{_format} eq 'kwiki') {
-        for (@tokens) {
-            next unless /\S/;                    # Ignore the whitespace
-            next if m[^(ht|f)tp://];             # Ignore URLs
-            s/([A-Z][a-z]+[A-Z]\w+)/!$1/g;       # Escape with !
-        }
-    }
-    # TODO: Add usemod <nowiki> escapes
 
     # Rejoin the tokens and whitespace.
     $self->{_wiki_text} .= join '', @tokens;
@@ -533,14 +344,8 @@ sub _start_item_text   {$_[0]->_indent_item('text')}
 
 sub _end_item_bullet   {$_[0]->_output("\n")}
 sub _end_item_number   {$_[0]->_output("\n")}
-sub _end_item_text     {$_[0]->_output(":\t") if $_[0]->{_format} eq 'wiki';
-                        $_[0]->_output(" ; ") if $_[0]->{_format} eq 'kwiki';
-                        $_[0]->_output(":"  ) if $_[0]->{_format} eq 'usemod';
-                        $_[0]->_output(": " ) if $_[0]->{_format} eq 'twiki';
-                        $_[0]->_output(" : ") if $_[0]->{_format} eq 'wikipedia';
-                        $_[0]->_output(":: ") if $_[0]->{_format} eq 'moinmoin';
-                        $_[0]->{_moinmoin_list} = 0
-                       }
+
+sub _end_item_text     {$_[0]->_output(":\t")} # Format specific.
 
 sub _start_over_block  {$_[0]->{_item_indent}++}
 sub _end_over_block    {$_[0]->{_item_indent}--}
@@ -558,33 +363,7 @@ sub _start_Para {
     my $indent_level = $self->{_item_indent};
 
     if ($self->{_in_over_block}) {
-
-        if ($self->{_format} eq 'wiki') {
-            $self->_append(("\t" x $indent_level) . " :\t");
-        }
-        elsif ($self->{_format} eq 'usemod') {
-            $self->_append(":" x $indent_level);
-        }
-        elsif ($self->{_format} eq 'moinmoin') {
-            $self->_append(' ' x $indent_level);
-        }
-    }
-
-
-    if ($self->{_moinmoin_list}) {
-        if (not $self->{_in_over_text} and $self->{_moinmoin_list} == 1) {
-             $self->_append("\n");
-        }
-
-        if ($self->{_in_over_text} and $self->{_moinmoin_list} == 2) {
-             $self->_append("\n");
-        }
-
-        if (not ($self->{_in_over_text} and $self->{_moinmoin_list} == 1)) {
-             $self->_append(' ' x $indent_level);
-        }
-
-        $self->{_moinmoin_list}++;
+        $self->_append(("\t" x $indent_level) . " :\t");
     }
 }
 
@@ -594,7 +373,6 @@ sub _start_Para {
 # _end_Para()
 #
 # Special handling for paragraphs that are part of an "over_text" block.
-# This is mainly required  be Kwiki.
 #
 sub _end_Para {
 
@@ -602,8 +380,7 @@ sub _end_Para {
 
     # Only add a newline if the paragraph isn't part of a text
     if ($self->{_in_over_text}) {
-        # Workaround for the fact that Kwiki doesn't have a definition block
-        #$self->_output("\n") if $self->{_format} eq 'kwiki';
+        # Do nothing in this format.
     }
     else {
         $self->_output("\n");
@@ -618,13 +395,19 @@ sub _end_Para {
 
 __END__
 
+
 =head1 NAME
 
 Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 
+=head1 VERSION
+
+This document refers to version 0.07 of Pod::Simple::Wiki, released February 1 2007.
+
+
 =head1 SYNOPSIS
 
-To create a simple C<pod2wiki> filter:
+To create a simple filter to convert from Pod to a wiki format:
 
     #!/usr/bin/perl -w
 
@@ -632,7 +415,7 @@ To create a simple C<pod2wiki> filter:
     use Pod::Simple::Wiki;
 
 
-    my $parser = Pod::Simple::Wiki->new();
+    my $parser = Pod::Simple::Wiki->new('kwiki');
 
     if (defined $ARGV[0]) {
         open IN, $ARGV[0]  or die "Couldn't open $ARGV[0]: $!\n";
@@ -652,22 +435,25 @@ To create a simple C<pod2wiki> filter:
     __END__
 
 
+To convert Pod to a wiki format using the installed C<pod2wiki> utility:
+
+    pod2wiki --style mediawiki file.pod > file.wiki
+
+
 =head1 DESCRIPTION
 
 The C<Pod::Simple::Wiki> module is used for converting Pod text to Wiki text.
 
 Pod (Plain Old Documentation) is a simple markup language used for writing Perl documentation.
 
-A Wiki is a user extensible web site. It uses very simple mark-up that is converted to Html.
-
-For an introduction to Wikis see: http://en.wikipedia.org/wiki/Wiki
+A Wiki is a user extensible web site. It uses very simple mark-up that is converted to Html. For an introduction to Wikis see: http://en.wikipedia.org/wiki/Wiki
 
 
 =head1 METHODS
 
-=head2 new()
+=head2 new('wiki_format')
 
-The C<new> method is used to create a new L<Pod::Simple::Wiki> object. It is also used to set the output Wiki format.
+The C<new> method is used to create a new C<Pod::Simple::Wiki> object. It is also used to set the output Wiki format.
 
   my $parser1 = Pod::Simple::Wiki->new('wiki');
   my $parser2 = Pod::Simple::Wiki->new('kwiki');
@@ -675,27 +461,44 @@ The C<new> method is used to create a new L<Pod::Simple::Wiki> object. It is als
 
 The currently supported formats are:
 
+    wiki
+    kwiki
+    usemod
+    twiki
+    wikipedia or mediawiki
+    moinmoin
+
+
+=head2 Other methods
+
+Pod::Simple::Wiki inherits all of the methods of C<Pod::Simple>. See L<Pod::Simple> for more details.
+
+
+=head1 Supported Formats
+
+The following wiki formats are supported by C<Pod::Simple::Wiki>:
+
 =over 4
 
 =item wiki
 
-This is the original Wiki format as used on Ward Cunningham's Portland repository of Patterns. The formatting rules are given at http://c2.com/cgi/wiki?TextFormattingRules
+This is the original Wiki format as used on Ward Cunningham's Portland repository of Patterns. See http://c2.com/cgi/wiki
 
 =item kwiki
 
-This is the format as used by Brian Ingerson's CGI::Kwiki: http://search.cpan.org/dist/CGI-Kwiki/
+This is the format as used by Brian Ingerson's Kwiki: http://www.kwiki.org
 
 =item usemod
 
-This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/wiki.pl?WikiFormat
+This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/wiki.pl
 
 =item twiki
 
-This is the format used by TWiki wikis.  See: http://www.twiki.org/
+This is the format used by TWiki wikis.  See: http://twiki.org/
 
 =item wikipedia or mediawiki
 
-This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.wikipedia.org/
+This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.mediawiki.org/
 
 =item moinmoin
 
@@ -705,12 +508,17 @@ This is the format used by MoinMoin wikis.  See: http://moinmoin.wikiwikiweb.de/
 
 If no format is specified the parser defaults to C<wiki>.
 
-Any other parameters in C<new> will be passed on to the parent L<Pod::Simple> object. See L<Pod::Simple> for more details.
+Any other parameters in C<new> will be passed on to the parent C<Pod::Simple> object. See L<Pod::Simple> for more details.
 
 
-=head2 Other methods
+=head1 Porting New Wiki Formats
 
-Pod::Simple::Wiki inherits all of the methods of L<Pod::Simple>. See L<Pod::Simple> for more details.
+If you are interested in porting a new wiki format have a look at L<Pod::Simple::Wiki::Template>.
+
+
+=head1 SEE ALSO
+
+This module also installs a C<pod2wiki> command line utility. See C<pod2wiki --help> for details.
 
 
 =head1 TODO
@@ -732,12 +540,6 @@ Fix some of the C<=over> edge cases. See the TODOs in the test programs.
 =back
 
 
-
-=head1 SEE ALSO
-
-This module also installs a C<pod2wiki> command line utility. See C<pod2wiki --help> for details.
-
-
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Sean M. Burke for C<Pod::Simple>. It may not be simple but sub-classing it is. C<:-)>
@@ -747,6 +549,13 @@ Thanks to Sam Tregar for TWiki support.
 Thanks Tony Sidaway for Wikipedia/MediaWiki support.
 
 Thanks to Michael Matthews for MoinMoin support.
+
+
+=head1 DISCLAIMER OF WARRANTY
+
+Because this software is licensed free of charge, there is no warranty for the software, to the extent permitted by applicable law. Except when otherwise stated in writing the copyright holders and/or other parties provide the software "as is" without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. The entire risk as to the quality and performance of the software is with you. Should the software prove defective, you assume the cost of all necessary servicing, repair, or correction.
+
+In no event unless required by applicable law or agreed to in writing will any copyright holder, or any other party who may modify and/or redistribute the software as permitted by the above licence, be liable to you for damages, including any general, special, incidental, or consequential damages arising out of the use or inability to use the software (including but not limited to loss of data or data being rendered inaccurate or losses sustained by you or third parties or a failure of the software to operate with any other software), even if such holder or other party has been advised of the possibility of such damages.
 
 
 =head1 AUTHOR

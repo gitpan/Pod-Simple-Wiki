@@ -4,9 +4,15 @@ META.yml
 Makefile.PL
 README
 
-pod2wiki
-
 lib/Pod/Simple/Wiki.pm
+lib/Pod/Simple/Wiki/Kwiki.pm
+lib/Pod/Simple/Wiki/Mediawiki.pm
+lib/Pod/Simple/Wiki/Moinmoin.pm
+lib/Pod/Simple/Wiki/Template.pm
+lib/Pod/Simple/Wiki/Twiki.pm
+lib/Pod/Simple/Wiki/Usemod.pm
+
+bin/pod2wiki
 
 examples/pod2wiki.pl
 examples/pod2wiki_simple.pl

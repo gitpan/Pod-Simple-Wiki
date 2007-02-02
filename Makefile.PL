@@ -9,6 +9,6 @@ WriteMakefile(
     'VERSION_FROM'  => 'lib/Pod/Simple/Wiki.pm',
     'NEEDS_LINKING' =>  0,
     'PREREQ_PM'     => {Pod::Simple => 0},
-    'dist'          => {COMPRESS => 'gzip', SUFFIX => 'gz'},
-    EXE_FILES       => ['pod2wiki'],
+    'dist'          => {COMPRESS => 'gzip --best', SUFFIX => 'gz'},
+    'EXE_FILES'      => ['bin/pod2wiki'],
 );

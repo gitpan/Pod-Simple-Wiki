@@ -16,7 +16,7 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 
 ###############################################################################
@@ -402,7 +402,7 @@ Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 
 =head1 VERSION
 
-This document refers to version 0.07 of Pod::Simple::Wiki, released February 1 2007.
+This document refers to version 0.08 of Pod::Simple::Wiki, released August 25 2007.
 
 
 =head1 SYNOPSIS
@@ -456,7 +456,7 @@ A Wiki is a user extensible web site. It uses very simple mark-up that is conver
 The C<new> method is used to create a new C<Pod::Simple::Wiki> object. It is also used to set the output Wiki format.
 
   my $parser1 = Pod::Simple::Wiki->new('wiki');
-  my $parser2 = Pod::Simple::Wiki->new('kwiki');
+  my $parser2 = Pod::Simple::Wiki->new('mediawiki');
   my $parser3 = Pod::Simple::Wiki->new(); # Defaults to 'wiki'
 
 The currently supported formats are:
@@ -465,6 +465,7 @@ The currently supported formats are:
     kwiki
     usemod
     twiki
+    tiddlywiki
     wikipedia or mediawiki
     moinmoin
 
@@ -495,6 +496,10 @@ This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/
 =item twiki
 
 This is the format used by TWiki wikis.  See: http://twiki.org/
+
+=item tiddlywiki
+
+This is the format used by the TiddlyWiki.  See: http://www.tiddlywiki.com/
 
 =item wikipedia or mediawiki
 
@@ -549,6 +554,11 @@ Thanks to Sam Tregar for TWiki support.
 Thanks Tony Sidaway for Wikipedia/MediaWiki support.
 
 Thanks to Michael Matthews for MoinMoin support.
+
+Thanks to Christopher J. Madsen for several MediaWiki additions and tests.
+
+Thanks Tim Bunce for the TiddlyWiki prod and Ron Savage for the port.
+
 
 
 =head1 DISCLAIMER OF WARRANTY

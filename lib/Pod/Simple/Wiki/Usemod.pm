@@ -16,7 +16,7 @@ use vars qw(@ISA $VERSION);
 
 
 @ISA     = qw(Pod::Simple::Wiki);
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 
 ###############################################################################
@@ -145,7 +145,7 @@ __END__
 
 =head1 NAME
 
-Pod::Simple::Wiki::Template - A class for creating Pod to Template wiki filters.
+Pod::Simple::Wiki::Usemod - A class for creating Pod to Usemod wiki filters.
 
 =head1 SYNOPSIS
 
@@ -157,30 +157,30 @@ This module isn't used directly. Instead it is called via C<Pod::Simple::Wiki>:
     use Pod::Simple::Wiki;
 
 
-    my $parser = Pod::Simple::Wiki->new('template');
+    my $parser = Pod::Simple::Wiki->new('usemod');
 
     ...
 
 
-Convert Pod to a Template wiki format using the installed C<pod2wiki> utility:
+Convert Pod to a Usemod wiki format using the installed C<pod2wiki> utility:
 
-    pod2wiki --style template file.pod > file.wiki
+    pod2wiki --style usemod file.pod > file.wiki
 
 
 =head1 DESCRIPTION
 
-The C<Pod::Simple::Wiki::Template> module is used for converting Pod text to Wiki text.
+The C<Pod::Simple::Wiki::Usemod> module is used for converting Pod text to Wiki text.
 
 Pod (Plain Old Documentation) is a simple markup language used for writing Perl documentation.
 
-For an introduction to Template see: http://www.portme.org
+For an introduction to Usemod see: http://www.usemod.com/cgi-bin/wiki.pl
 
 This module isn't generally invoked directly. Instead it is called via C<Pod::Simple::Wiki>. See the L<Pod::Simple::Wiki> and L<pod2wiki> documentation for more information.
 
 
 =head1 METHODS
 
-Pod::Simple::Wiki::Template inherits all of the methods of C<Pod::Simple> and C<Pod::Simple::Wiki>. See L<Pod::Simple> and L<Pod::Simple::Wiki> for more details.
+Pod::Simple::Wiki::Usemod inherits all of the methods of C<Pod::Simple> and C<Pod::Simple::Wiki>. See L<Pod::Simple> and L<Pod::Simple::Wiki> for more details.
 
 
 =head1 SEE ALSO
@@ -190,7 +190,7 @@ This module also installs a C<pod2wiki> command line utility. See C<pod2wiki --h
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Portme McPortme and Portme O'Portme for patches, documentation or bugfixes with the Template format.
+Submit a bugfix or test and your name will go here.
 
 
 =head1 DISCLAIMER OF WARRANTY
@@ -201,8 +201,6 @@ Please refer to the DISCLAIMER OF WARRANTY in L<Pod::Simple::Wiki>.
 =head1 AUTHORS
 
 John McNamara jmcnamara@cpan.org
-
-Portme McPortme portme@portme.org
 
 
 =head1 COPYRIGHT

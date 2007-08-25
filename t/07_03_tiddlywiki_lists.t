@@ -15,7 +15,7 @@ use strict;
 use Pod::Simple::Wiki;
 use Test::More tests => 12;
 
-my $style = 'wikipedia';
+my $style = 'tiddlywiki';
 
 # Output the tests for visual testing in the wiki.
 # END{output_tests()};
@@ -87,17 +87,16 @@ sub output_tests {
 
     my $test = 1;
 
-    print "\n----\n\n";
-
     for my $test_ref (@tests) {
 
         my $parser  =  Pod::Simple::Wiki->new($style);
         my $pod     =  $test_ref->[0];
         my $name    =  $test_ref->[2];
 
-        print "Test ", $test++, ":\t", $name, "\n";
+        print "!Test ", $test++, ":\t", $name, "\n";
         $parser->parse_string_document($pod);
-        print "\n----\n\n";
+
+        print "\n";
     }
 }
 
@@ -319,10 +318,10 @@ Number item 2.0
 #
 #
 \# Number item 1.0
-\## Number item 1.1
-\### Number item 1.2
-\### Number item 2.2
-\## Number item 2.1
+\#\# Number item 1.1
+\#\#\# Number item 1.2
+\#\#\# Number item 2.2
+\#\# Number item 2.1
 \# Number item 2.0
 
 ################################################################################
@@ -345,7 +344,7 @@ Definition item
 # Expected output.
 #
 #
-; Foo : Definition item
+* Foo Definition item
 
 ###############################################################################
 #
@@ -375,9 +374,9 @@ Definition item 3.0
 # Expected output.
 #
 #
-; Foo : Definition item 1.0
-; Bar : Definition item 2.0
-; Baz : Definition item 3.0
+* Foo Definition item 1.0
+* Bar Definition item 2.0
+* Baz Definition item 3.0
 
 ###############################################################################
 #
@@ -427,12 +426,12 @@ Definition item 2.0
 # Expected output.
 #
 #
-; Foo : Definition item 1.0
-;; Foo : Definition item 1.1
-;;; Foo : Definition item 1.2
-;;; Bar : Definition item 2.2
-;; Bar : Definition item 2.1
-; Bar : Definition item 2.0
+* Foo Definition item 1.0
+** Foo Definition item 1.1
+*** Foo Definition item 1.2
+*** Bar Definition item 2.2
+** Bar Definition item 2.1
+* Bar Definition item 2.0
 
 ###############################################################################
 #
@@ -483,10 +482,10 @@ Bullet item 2.0
 #
 #
 * Bullet item 1.0
-\## Number item 1.1
-;;; Foo : Definition item 1.2
-;;; Bar : Definition item 2.2
-\## Number item 2.1
+\#\# Number item 1.1
+*** Foo Definition item 1.2
+*** Bar Definition item 2.2
+\#\# Number item 2.1
 * Bullet item 2.0
 
 ################################################################################
@@ -509,7 +508,9 @@ This is a long sentence that forms part of a definition block.
 # Expected output.
 #
 #
-; : This is a long sentence that forms part of a definition block.
+<<<
+This is a long sentence that forms part of a definition block.
+>>>
 
 ################################################################################
 #
@@ -531,7 +532,7 @@ This is a long sentence that forms part of a definition block.
 # Expected output.
 #
 #
-; This is a long sentence that forms part of a definition block. :
+* This is a long sentence that forms part of a definition block.
 
 ###############################################################################
 #

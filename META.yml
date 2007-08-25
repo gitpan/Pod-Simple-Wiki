@@ -1,6 +1,6 @@
 name:               Pod-Simple-Wiki
 abstract:           A class for creating Pod to Wiki filters.
-version:            0.07
+version:            0.08
 version_from:       lib/Pod/Simple/Wiki.pm
 installdirs:        site
 requires:

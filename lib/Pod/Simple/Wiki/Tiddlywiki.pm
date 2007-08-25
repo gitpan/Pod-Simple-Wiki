@@ -1,11 +1,11 @@
-package Pod::Simple::Wiki::Kwiki;
+package Pod::Simple::Wiki::Tiddlywiki;
 
 ###############################################################################
 #
-# Pod::Simple::Wiki::Kwiki - A class for creating Pod to Kwiki filters.
+# Pod::Simple::Wiki::Tiddlywiki - A class for creating Pod to Tiddlywiki filters.
 #
 #
-# Copyright 2003-2007, John McNamara, jmcnamara@cpan.org
+# Copyright 2007, Ron Savage, ron@savage.net.au
 #
 # Documentation after __END__
 #
@@ -18,31 +18,29 @@ use vars qw(@ISA $VERSION);
 @ISA     = qw(Pod::Simple::Wiki);
 $VERSION = '0.08';
 
-
 ###############################################################################
 #
 # The tag to wiki mappings.
 #
 my $tags = {
-            '<b>'    => '*',
-            '</b>'   => '*',
-            '<i>'    => '/',
-            '</i>'   => '/',
-            '<tt>'   => '[=',
-            '</tt>'  => ']',
-            '<pre>'  => '',
-            '</pre>' => "\n\n",
+            '<b>'    => q(''),
+            '</b>'   => q(''),
+            '<i>'    => '//',
+            '</i>'   => '//',
+            '<tt>'   => '{{{',
+            '</tt>'  => '}}}',
+            '<pre>'  => "{{{\n",
+            '</pre>' => "\n}}}\n\n",
 
-            '<h1>'   => "\n----\n= ",
-            '</h1>'  => " =\n\n",
-            '<h2>'   => "\n== ",
-            '</h2>'  => " ==\n\n",
-            '<h3>'   => "\n=== ",
-            '</h3>'  => " ===\n\n",
-            '<h4>'   => "==== ",
-            '</h4>'  => "\n\n",
+            '<h1>'   => '!',
+            '</h1>'  => "\n",
+            '<h2>'   => '!!',
+            '</h2>'  => "\n",
+            '<h3>'   => '!!!',
+            '</h3>'  => "\n",
+            '<h4>'   => '!!!!',
+            '</h4>'  => "\n",
            };
-
 
 ###############################################################################
 #
@@ -60,6 +58,7 @@ sub new {
     return $self;
 }
 
+# How Pod "=over" blocks are converted to Tiddlywiki wiki lists.
 
 ###############################################################################
 #
@@ -78,30 +77,12 @@ sub _indent_item {
          $self->_append('*' x $indent_level . ' ');
     }
     elsif ($item_type eq 'number') {
-         $self->_append('0' x $indent_level . ' ');
+         $self->_append('#' x $indent_level . ' ');
     }
+    # TiddlyWiki doesn't have the equivalent of a <dl> list so we use a
+    # bullet list as a workaround.
     elsif ($item_type eq 'text') {
-         $self->_append(';' x $indent_level . ' ');
-    }
-}
-
-
-###############################################################################
-#
-# _skip_headings()
-#
-# Formatting in headings doesn't look great or is ignored in some formats.
-#
-sub _skip_headings {
-
-    my $self = shift;
-
-    if ($self->{_in_head1} or
-        $self->{_in_head2} or
-        $self->{_in_head3} or
-        $self->{_in_head4})
-    {
-      return 1;
+         $self->_append('*' x $indent_level . ' ');
     }
 }
 
@@ -117,25 +98,24 @@ sub _handle_text {
     my $self = shift;
     my $text = $_[0];
 
-    # Only escape CamelCase in Kwiki paragraphs
-    if (not $self->{_in_Para}) {
-        $self->{_wiki_text} .= $text;
-        return;
-    }
-
     # Split the text into tokens but maintain the whitespace
     my @tokens = split /(\s+)/, $text;
 
+
+
+    # Escape any tokens here, if necessary.
     for (@tokens) {
-        next unless /\S/;                    # Ignore the whitespace
-        next if m[^(ht|f)tp://];             # Ignore URLs
-        s/([A-Z][a-z]+[A-Z]\w+)/!$1/g;       # Escape with !
+        next unless /\S/;  # Ignore the whitespace
+
+        # Escape WikiWords with ~, unless in varbatim section.
+        next if $self->{_in_Verbatim};
+        next if $self->{_in_C};
+        s/([A-Z]+[a-z]+[A-Z]+[a-z]*)/~$1/g;
     }
 
     # Rejoin the tokens and whitespace.
     $self->{_wiki_text} .= join '', @tokens;
 }
-
 
 ###############################################################################
 #
@@ -146,7 +126,10 @@ sub _handle_text {
 # Text     lists
 # Block    lists
 #
-sub _end_item_text     {$_[0]->_output(' ; ')}
+
+# TiddlyWiki doesn't have the equivalent of a <dl> list so we use a
+# bullet list as a workaround.
+sub _end_item_text     {$_[0]->_output(' ')}
 
 
 ###############################################################################
@@ -161,32 +144,8 @@ sub _start_Para {
     my $indent_level = $self->{_item_indent};
 
     if ($self->{_in_over_block}) {
-        # Do something here is necessary
+        # Do something here if necessary
     }
-}
-
-
-###############################################################################
-#
-# _end_Para()
-#
-# Special handling for paragraphs that are part of an "over_text" block.
-# This is mainly required  be Kwiki.
-#
-sub _end_Para {
-
-    my $self = shift;
-
-    # Only add a newline if the paragraph isn't part of a text.
-    if ($self->{_in_over_text}) {
-        # Workaround for the fact that Kwiki doesn't have a definition block.
-        #$self->_output("\n");
-    }
-    else {
-        $self->_output("\n");
-    }
-
-    $self->_output("\n")
 }
 
 
@@ -198,7 +157,7 @@ __END__
 
 =head1 NAME
 
-Pod::Simple::Wiki::Kwiki - A class for creating Pod to Kwiki wiki filters.
+Pod::Simple::Wiki::Tiddlywiki - A class for creating Pod to Tiddlywiki wiki filters.
 
 =head1 SYNOPSIS
 
@@ -210,51 +169,49 @@ This module isn't used directly. Instead it is called via C<Pod::Simple::Wiki>:
     use Pod::Simple::Wiki;
 
 
-    my $parser = Pod::Simple::Wiki->new('kwiki');
+    my $parser = Pod::Simple::Wiki->new('tiddlywiki');
 
     ...
 
 
-Convert Pod to a Kwiki wiki format using the installed C<pod2wiki> utility:
+Convert Pod to a Tiddlywiki wiki format using the installed C<pod2wiki> utility:
 
-    pod2wiki --style kwiki file.pod > file.wiki
+    pod2wiki --style tiddlywiki file.pod > file.wiki
 
 
 =head1 DESCRIPTION
 
-The C<Pod::Simple::Wiki::Kwiki> module is used for converting Pod text to Wiki text.
+The C<Pod::Simple::Wiki::Tiddlywiki> module is used for converting Pod text to Wiki text.
 
 Pod (Plain Old Documentation) is a simple markup language used for writing Perl documentation.
 
-For an introduction to Kwiki see: http://www.kwiki.org
+For an introduction to Tiddlywiki see: http://tiddlywiki.com/
 
 This module isn't generally invoked directly. Instead it is called via C<Pod::Simple::Wiki>. See the L<Pod::Simple::Wiki> and L<pod2wiki> documentation for more information.
 
-
 =head1 METHODS
 
-Pod::Simple::Wiki::Kwiki inherits all of the methods of C<Pod::Simple> and C<Pod::Simple::Wiki>. See L<Pod::Simple> and L<Pod::Simple::Wiki> for more details.
+Pod::Simple::Wiki::Tiddlywiki inherits all of the methods of C<Pod::Simple> and C<Pod::Simple::Wiki>. See L<Pod::Simple> and L<Pod::Simple::Wiki> for more details.
 
+=head1 Tiddlywiki Specific information
 
 =head1 SEE ALSO
 
 This module also installs a C<pod2wiki> command line utility. See C<pod2wiki --help> for details.
 
-
 =head1 ACKNOWLEDGEMENTS
 
 Submit a bugfix or test and your name will go here.
-
 
 =head1 DISCLAIMER OF WARRANTY
 
 Please refer to the DISCLAIMER OF WARRANTY in L<Pod::Simple::Wiki>.
 
-
 =head1 AUTHORS
 
 John McNamara jmcnamara@cpan.org
 
+Ron Savage, ron@savage.net.au
 
 =head1 COPYRIGHT
 

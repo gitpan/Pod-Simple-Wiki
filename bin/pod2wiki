@@ -75,6 +75,15 @@ pod2wiki [--style --noerrata --help --man] podfile [outfile]
         --man        full documentation
 
 
+=head1 DESCRIPTION
+
+This program is used for converting Pod text to Wiki text.
+
+Pod is Perl's I<Plain Old Documentation> format. See C<man perlpod> or C<perldoc perlpod>.
+
+A Wiki is a user extensible web site. It uses very simple mark-up that is converted to Html. For an introduction to Wikis see: http://en.wikipedia.org/wiki/Wiki
+
+
 =head1 OPTIONS
 
 =over 4
@@ -95,27 +104,35 @@ Sets the wiki style of the output. If no C<style> is specified the program defau
 
 =item wiki
 
-This is the original Wiki format as used on Ward Cunningham's Portland repository of Patterns. The formatting rules are given at http://c2.com/cgi/wiki?TextFormattingRules
+This is the original Wiki format as used on Ward Cunningham's Portland repository of Patterns. See http://c2.com/cgi/wiki
 
 =item kwiki
 
-This is the format as used by Brian Ingerson's CGI::Kwiki: http://search.cpan.org/dist/CGI-Kwiki/
+This is the format as used by Brian Ingerson's Kwiki: http://www.kwiki.org
 
 =item usemod
 
-This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/wiki.pl?WikiFormat
+This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/wiki.pl
 
 =item twiki
 
-This is the format used by TWiki wikis.  See: http://www.twiki.org/
+This is the format used by TWiki wikis.  See: http://twiki.org/
+
+=item tiddlywiki
+
+This is the format used by the TiddlyWiki.  See: http://www.tiddlywiki.com/
 
 =item wikipedia or mediawiki
 
-This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.wikipedia.org/
+This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.mediawiki.org/
 
 =item moinmoin
 
-This is the format used by MoinMoin wikis.  See: http://moinmoin.wikiwikiweb.de/
+This is the format used by MoinMoin wikis.  See: http://moinmo.in/MoinMoinWiki
+
+=item confluence
+
+This is the format used by Confluence.  See: http://www.atlassian.com/software/confluence/
 
 =back
 
@@ -134,17 +151,23 @@ Print a brief help message and exits.
 
 Prints the manual page and exits.
 
-
 =back
 
-=head1 DESCRIPTION
 
-This program is used for converting Pod text to Wiki text.
+=head1 DISCLAIMER OF WARRANTY
 
-Pod is Perl's I<Plain Old Documentation> format. See C<man perlpod> or C<perldoc perlpod>.
+Please refer to the DISCLAIMER OF WARRANTY in L<Pod::Simple::Wiki>.
 
-A Wiki is a user extensible web site. It uses very simple mark-up that is converted to Html.
 
-For an introduction to Wikis see: http://c2.com/cgi/wiki?WikiGettingStartedFaq and http://c2.com/cgi/wiki?WikiWikiWebFaq
+=head1 AUTHOR
+
+John McNamara jmcnamara@cpan.org
+
+
+=head1 COPYRIGHT
+
+© MMIII-MMVIII, John McNamara.
+
+All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.
 
 =cut

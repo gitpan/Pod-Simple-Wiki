@@ -12,6 +12,7 @@ lib/Pod/Simple/Wiki/Template.pm
 lib/Pod/Simple/Wiki/Tiddlywiki.pm
 lib/Pod/Simple/Wiki/Twiki.pm
 lib/Pod/Simple/Wiki/Usemod.pm
+lib/Pod/Simple/Wiki/Confluence.pm
 
 bin/pod2wiki
 
@@ -48,3 +49,6 @@ t/07_01_tiddlywiki_format.t
 t/07_02_tiddlywiki_head.t
 t/07_03_tiddlywiki_lists.t
 
+t/08_01_confluence_format.t
+t/08_02_confluence_head.t
+t/08_03_confluence_lists.t

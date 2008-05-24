@@ -1,8 +1,8 @@
-package Pod::Simple::Wiki::Twiki;
+package Pod::Simple::Wiki::Confluence;
 
 ###############################################################################
 #
-# Pod::Simple::Wiki::Twiki - A class for creating Pod to Twiki filters.
+# Pod::Simple::Wiki::Confluence - A class for creating Pod to Confluence filters.
 #
 #
 # Copyright 2003-2008, John McNamara, jmcnamara@cpan.org
@@ -16,8 +16,7 @@ use vars qw(@ISA $VERSION);
 
 
 @ISA     = qw(Pod::Simple::Wiki);
-$VERSION = '0.08';
-
+$VERSION = '0.09';
 
 ###############################################################################
 #
@@ -28,21 +27,20 @@ my $tags = {
             '</b>'   => '*',
             '<i>'    => '_',
             '</i>'   => '_',
-            '<tt>'   => '=',
-            '</tt>'  => '=',
-            '<pre>'  => "\n<verbatim>\n",
-            '</pre>' => "\n</verbatim>\n\n",
+            '<tt>'   => '{{',
+            '</tt>'  => '}}',
+            '<pre>'  => "{noformat}\n",
+            '</pre>' => "\n{noformat}\n",
 
-            '<h1>'   => '---+ ',
+            '<h1>'   => 'h1. ',
             '</h1>'  => "\n\n",
-            '<h2>'   => '---++ ',
+            '<h2>'   => 'h2. ',
             '</h2>'  => "\n\n",
-            '<h3>'   => '---+++ ',
+            '<h3>'   => 'h3. ',
             '</h3>'  => "\n\n",
-            '<h4>'   => '---++++ ',
+            '<h4>'   => 'h4. ',
             '</h4>'  => "\n\n",
            };
-
 
 ###############################################################################
 #
@@ -60,7 +58,6 @@ sub new {
     return $self;
 }
 
-
 ###############################################################################
 #
 # _indent_item()
@@ -75,16 +72,17 @@ sub _indent_item {
     my $indent_level = $self->{_item_indent};
 
     if    ($item_type eq 'bullet') {
-         $self->_append('   ' x $indent_level . '* ');
+         $self->_append('*' x $indent_level . ' ');
     }
     elsif ($item_type eq 'number') {
-         $self->_append('   ' x $indent_level . $item_param . '. ');
+         $self->_append('#' x $indent_level . ' ');
     }
+    # Confluence doesn't have the equivalent of a <dl> list so we use a
+    # bullet list with a bolded "item" as a workaround.
     elsif ($item_type eq 'text') {
-         $self->_append('   ' x $indent_level . '$ ' );
+         $self->_append('*' x $indent_level . ' *');
     }
 }
-
 
 ###############################################################################
 #
@@ -98,10 +96,16 @@ sub _handle_text {
     my $self = shift;
     my $text = $_[0];
 
+    # Only escape words in paragraphs
+    if (not $self->{_in_Para}) {
+        $self->{_wiki_text} .= $text;
+        return;
+    }
+
     # Split the text into tokens but maintain the whitespace
     my @tokens = split /(\s+)/, $text;
 
-    # Escape any tokens here.
+    # Escape any tokens here, if necessary.
 
     # Rejoin the tokens and whitespace.
     $self->{_wiki_text} .= join '', @tokens;
@@ -117,7 +121,7 @@ sub _handle_text {
 # Text     lists
 # Block    lists
 #
-sub _end_item_text     {$_[0]->_output(': ')}
+sub _end_item_text     {$_[0]->_output('* ')}
 
 
 ###############################################################################
@@ -132,7 +136,7 @@ sub _start_Para {
     my $indent_level = $self->{_item_indent};
 
     if ($self->{_in_over_block}) {
-        # Do something here is necessary
+        $self->_append('bq. ');
     }
 }
 
@@ -145,7 +149,7 @@ __END__
 
 =head1 NAME
 
-Pod::Simple::Wiki::Twiki - A class for creating Pod to Twiki wiki filters.
+Pod::Simple::Wiki::Confluence - A class for creating Pod to Confluence wiki filters.
 
 =head1 SYNOPSIS
 
@@ -157,30 +161,30 @@ This module isn't used directly. Instead it is called via C<Pod::Simple::Wiki>:
     use Pod::Simple::Wiki;
 
 
-    my $parser = Pod::Simple::Wiki->new('twiki');
+    my $parser = Pod::Simple::Wiki->new('confluence');
 
     ...
 
 
-Convert Pod to a Twiki wiki format using the installed C<pod2wiki> utility:
+Convert Pod to a Confluence wiki format using the installed C<pod2wiki> utility:
 
-    pod2wiki --style twiki file.pod > file.wiki
+    pod2wiki --style confluence file.pod > file.wiki
 
 
 =head1 DESCRIPTION
 
-The C<Pod::Simple::Wiki::Twiki> module is used for converting Pod text to Wiki text.
+The C<Pod::Simple::Wiki::Confluence> module is used for converting Pod text to Wiki text.
 
 Pod (Plain Old Documentation) is a simple markup language used for writing Perl documentation.
 
-For an introduction to Twiki see: http://twiki.org
+For an introduction to Confluence see: http://www.atlassian.com/software/confluence/
 
 This module isn't generally invoked directly. Instead it is called via C<Pod::Simple::Wiki>. See the L<Pod::Simple::Wiki> and L<pod2wiki> documentation for more information.
 
 
 =head1 METHODS
 
-Pod::Simple::Wiki::Twiki inherits all of the methods of C<Pod::Simple> and C<Pod::Simple::Wiki>. See L<Pod::Simple> and L<Pod::Simple::Wiki> for more details.
+Pod::Simple::Wiki::Confluence inherits all of the methods of C<Pod::Simple> and C<Pod::Simple::Wiki>. See L<Pod::Simple> and L<Pod::Simple::Wiki> for more details.
 
 
 =head1 SEE ALSO
@@ -190,7 +194,7 @@ This module also installs a C<pod2wiki> command line utility. See C<pod2wiki --h
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Sam Tregar for TWiki support.
+Thanks to David Bartle, Andrew Hobbs and Jim Renwick for patches.
 
 
 =head1 DISCLAIMER OF WARRANTY

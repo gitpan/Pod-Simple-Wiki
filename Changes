@@ -1,5 +1,11 @@
 Revision history for Pod::Simple::Wiki.
 
+0.08 May 24 2008
+
+    + Added Confluence support.
+      Thanks to David Bartle, Andrew Hobbs and
+      Jim Renwick for patches.
+
 
 0.08 August 25 2007
 

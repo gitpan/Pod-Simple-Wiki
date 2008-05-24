@@ -6,7 +6,7 @@
 #
 # Tests for I<>, B<>, C<> etc., formatting codes.
 #
-# reverse('©'), December 2005, John McNamara, jmcnamara@cpan.org
+# reverse('©'), August 2004, John McNamara, jmcnamara@cpan.org
 #
 
 
@@ -15,21 +15,21 @@ use strict;
 use Pod::Simple::Wiki;
 use Test::More tests => 6;
 
-my $style = 'moinmoin';
+my $style = 'confluence';
 
 # Output the tests for visual testing in the wiki.
 # END{output_tests()};
 
 my @tests  = (
-            # Simple formatting tests
-            [ "=pod\n\nI<Foo>"      => qq(''Foo''\n\n),       'Italic'     ],
-            [ "=pod\n\nB<Foo>"      => qq('''Foo'''\n\n),     'Bold'       ],
-            [ "=pod\n\nC<Foo>"      => qq(`Foo`\n\n),         'Monospace'  ],
-            [ "=pod\n\nF<Foo>"      => qq(''Foo''\n\n),       'Filename'   ],
+                # Simple formatting tests
+                [ "=pod\n\nI<Foo>"      => qq(_Foo_\n\n),   'Italic'     ],
+                [ "=pod\n\nB<Foo>"      => qq(*Foo*\n\n),   'Bold'       ],
+                [ "=pod\n\nC<Foo>"      => qq({{Foo}}\n\n),  'Monospace'  ],
+                [ "=pod\n\nF<Foo>"      => qq(_Foo_\n\n),   'Filename'   ],
 
-            # Nested formatting tests
-            [ "=pod\n\nB<I<Foo>>"   => qq('''''Foo'''''\n\n), 'Bold Italic'],
-            [ "=pod\n\nI<B<Foo>>"   => qq('''''Foo'''''\n\n), 'Italic Bold'],
+                # Nested formatting tests
+                [ "=pod\n\nB<I<Foo>>"   => qq(*_Foo_*\n\n), 'Bold Italic'],
+                [ "=pod\n\nI<B<Foo>>"   => qq(_*Foo*_\n\n), 'Italic Bold'],
 );
 
 

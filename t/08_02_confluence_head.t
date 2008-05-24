@@ -4,33 +4,29 @@
 #
 # A test for Pod::Simple::Wiki.
 #
-# Tests for I<>, B<>, C<> etc., formatting codes.
+# Tests for =head pod directives.
 #
-# reverse('©'), December 2005, John McNamara, jmcnamara@cpan.org
+# reverse('©'), August 2004, John McNamara, jmcnamara@cpan.org
 #
 
 
 use strict;
 
 use Pod::Simple::Wiki;
-use Test::More tests => 6;
+use Test::More tests => 4;
 
-my $style = 'moinmoin';
+my $style = 'confluence';
 
 # Output the tests for visual testing in the wiki.
 # END{output_tests()};
 
 my @tests  = (
-            # Simple formatting tests
-            [ "=pod\n\nI<Foo>"      => qq(''Foo''\n\n),       'Italic'     ],
-            [ "=pod\n\nB<Foo>"      => qq('''Foo'''\n\n),     'Bold'       ],
-            [ "=pod\n\nC<Foo>"      => qq(`Foo`\n\n),         'Monospace'  ],
-            [ "=pod\n\nF<Foo>"      => qq(''Foo''\n\n),       'Filename'   ],
+                [ "=pod\n\n=head1 Head 1" => qq(h1. Head 1\n\n)],
+                [ "=pod\n\n=head2 Head 2" => qq(h2. Head 2\n\n)],
+                [ "=pod\n\n=head3 Head 3" => qq(h3. Head 3\n\n)],
+                [ "=pod\n\n=head4 Head 4" => qq(h4. Head 4\n\n)],
+             );
 
-            # Nested formatting tests
-            [ "=pod\n\nB<I<Foo>>"   => qq('''''Foo'''''\n\n), 'Bold Italic'],
-            [ "=pod\n\nI<B<Foo>>"   => qq('''''Foo'''''\n\n), 'Italic Bold'],
-);
 
 
 
@@ -43,13 +39,29 @@ for my $test_ref (@tests) {
     my $parser  = Pod::Simple::Wiki->new($style);
     my $pod     = $test_ref->[0];
     my $target  = $test_ref->[1];
-    my $name    = $test_ref->[2];
     my $wiki;
 
     $parser->output_string(\$wiki);
     $parser->parse_string_document($pod);
 
-    is($wiki, $target, "\tTesting: $name");
+
+    is($wiki, $target, "\tTesting: " . encode_escapes($pod));
+}
+
+
+###############################################################################
+#
+# Encode escapes to make them visible in the test output.
+#
+sub encode_escapes {
+    my $data = $_[0];
+
+    for ($data) {
+        s/\t/\\t/g;
+        s/\n/\\n/g;
+    }
+
+    return $data;
 }
 
 
@@ -67,15 +79,15 @@ sub output_tests {
 
         my $parser  =  Pod::Simple::Wiki->new($style);
         my $pod     =  $test_ref->[0];
-        my $name    =  $test_ref->[2];
+        my $pod2    =  encode_escapes($pod);
+           $pod2    =~ s/^=pod\\n\\n//;
 
-        $pod        =~ s/=pod\n\n//;
-        $pod        = "=pod\n\n=head2 Test ". $test++ . " $name\n\n$pod";
-
+        print "h2. Test ", $test++, ":\t", $pod2, "\n";
         $parser->parse_string_document($pod);
     }
 }
 
-
 __END__
+
+
 

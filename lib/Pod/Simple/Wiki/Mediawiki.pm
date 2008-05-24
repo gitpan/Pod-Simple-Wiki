@@ -5,7 +5,7 @@ package Pod::Simple::Wiki::Mediawiki;
 # Pod::Simple::Wiki::Mediawiki - A class for creating Pod to Mediawiki filters.
 #
 #
-# Copyright 2003-2007, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2008, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
@@ -311,6 +311,6 @@ Christopher J. Madsen perl@cjmweb.net
 
 =head1 COPYRIGHT
 
-© MMIII-MMVII, John McNamara.
+© MMIII-MMVIII, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.

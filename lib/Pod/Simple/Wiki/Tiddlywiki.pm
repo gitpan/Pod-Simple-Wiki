@@ -215,6 +215,6 @@ Ron Savage, ron@savage.net.au
 
 =head1 COPYRIGHT
 
-© MMIII-MMVII, John McNamara.
+© MMIII-MMVIII, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.

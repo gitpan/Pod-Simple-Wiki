@@ -5,7 +5,7 @@ package Pod::Simple::Wiki;
 # Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 #
 #
-# Copyright 2003-2007, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2008, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
@@ -16,7 +16,7 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 
 ###############################################################################
@@ -402,7 +402,7 @@ Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 
 =head1 VERSION
 
-This document refers to version 0.08 of Pod::Simple::Wiki, released August 25 2007.
+This document refers to version 0.09 of Pod::Simple::Wiki, released May 24 2008.
 
 
 =head1 SYNOPSIS
@@ -468,6 +468,7 @@ The currently supported formats are:
     tiddlywiki
     wikipedia or mediawiki
     moinmoin
+    confluence
 
 
 =head2 Other methods
@@ -507,7 +508,11 @@ This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.media
 
 =item moinmoin
 
-This is the format used by MoinMoin wikis.  See: http://moinmoin.wikiwikiweb.de/
+This is the format used by MoinMoin wikis.  See: http://moinmo.in/MoinMoinWiki
+
+=item confluence
+
+This is the format used by Confluence.  See: http://www.atlassian.com/software/confluence/
 
 =back
 
@@ -559,6 +564,7 @@ Thanks to Christopher J. Madsen for several MediaWiki additions and tests.
 
 Thanks Tim Bunce for the TiddlyWiki prod and Ron Savage for the port.
 
+Thanks to David Bartle, Andrew Hobbs and Jim Renwick for conlfuence patches.
 
 
 =head1 DISCLAIMER OF WARRANTY
@@ -575,6 +581,6 @@ John McNamara jmcnamara@cpan.org
 
 =head1 COPYRIGHT
 
-© MMIII-MMVII, John McNamara.
+© MMIII-MMVIII, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.

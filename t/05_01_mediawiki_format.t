@@ -68,7 +68,7 @@ sub output_tests {
 
     my $test = 1;
 
-    print "\n----\n\n";
+    print "\n\n";
 
     for my $test_ref (@tests) {
 
@@ -77,7 +77,7 @@ sub output_tests {
         my $name    =  $test_ref->[2];
 
         $pod        =~ s/=pod\n\n//;
-        $pod        = "=pod\n\n=head1 Test ". $test++ . " $name\n\n$pod";
+        $pod        = "=pod\n\n=head2 Test ". $test++ . " $name\n\n$pod";
 
         $parser->parse_string_document($pod);
     }

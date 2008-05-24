@@ -19,7 +19,7 @@ package Pod::Simple::Wiki::Template;
 # Pod::Simple::Wiki::Template - A class for creating Pod to Template filters.
 #
 #
-# Copyright 2003-2007, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2008, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
@@ -322,6 +322,6 @@ Portme McPortme portme@portme.org
 
 =head1 COPYRIGHT
 
-© MMIII-MMVII, John McNamara.
+© MMIII-MMVIII, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.

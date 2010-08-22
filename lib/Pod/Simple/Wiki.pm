@@ -16,7 +16,7 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 
 ###############################################################################
@@ -73,6 +73,13 @@ sub new {
        $self->{output_fh}     ||= *STDOUT{IO};
        $self->{_item_indent}    = 0;
        $self->{_debug}          = 0;
+
+    # Set Pod::Simple parser options
+    # - Merge contiguous text        RT#60304
+    $self->merge_text(1);
+
+    # - Ignore X<>  (index entries)  RT#60307
+    $self->nix_X_codes(1);
 
     bless  $self, $class;
     return $self;

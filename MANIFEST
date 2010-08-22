@@ -1,6 +1,5 @@
 Changes
 MANIFEST
-META.yml
 Makefile.PL
 README
 
@@ -49,6 +48,7 @@ t/06_03_moinmoin_lists.t
 t/07_01_tiddlywiki_format.t
 t/07_02_tiddlywiki_head.t
 t/07_03_tiddlywiki_lists.t
+t/07_04_tiddlywiki_text.t
 
 t/08_01_confluence_format.t
 t/08_02_confluence_head.t
@@ -58,3 +58,4 @@ t/09_01_textile_format.t
 t/09_02_textile_head.t
 t/09_03_textile_lists.t
 
+META.yml                                 Module meta-data (added by MakeMaker)

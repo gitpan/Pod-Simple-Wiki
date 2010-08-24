@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Pod-Simple-Wiki
-version:            0.12
+version:            0.13
 abstract:           A class for creating Pod to Wiki filters.
 author:
     - John McNamara (jmcnamara@cpan.org)

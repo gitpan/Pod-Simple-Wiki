@@ -16,7 +16,7 @@ use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 
 ###############################################################################
@@ -569,6 +569,8 @@ Thanks to Christopher J. Madsen for several MediaWiki additions and tests.
 
 Thanks Tim Bunce for the TiddlyWiki prod and Ron Savage for the port.
 
+Thanks to Olivier 'dolmen' Mengué for various TiddlyWiki patches.
+
 Thanks to David Bartle, Andrew Hobbs and Jim Renwick for confluence patches.
 
 
@@ -591,6 +593,6 @@ John McNamara jmcnamara@cpan.org
 
 =head1 COPYRIGHT
 
-MMIII-MMVIII, John McNamara.
+MMIII-MMX, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.

@@ -5,18 +5,21 @@ package Pod::Simple::Wiki;
 # Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 #
 #
-# Copyright 2003-2008, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2012, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
 
+# perltidy with the following options: -mbl=2 -pt=0 -nola
+
 use strict;
+
 #use Pod::Simple::Debug (5);
 use Pod::Simple;
 use vars qw(@ISA $VERSION);
 
 @ISA     = qw(Pod::Simple);
-$VERSION = '0.14';
+$VERSION = '0.15';
 
 
 ###############################################################################
@@ -24,24 +27,24 @@ $VERSION = '0.14';
 # The tag to wiki mappings.
 #
 my $tags = {
-            '<b>'    => "'''",
-            '</b>'   => "'''",
-            '<i>'    => "''",
-            '</i>'   => "''",
-            '<tt>'   => '"',
-            '</tt>'  => '"',
-            '<pre>'  => '',
-            '</pre>' => "\n\n",
+    '<b>'    => "'''",
+    '</b>'   => "'''",
+    '<i>'    => "''",
+    '</i>'   => "''",
+    '<tt>'   => '"',
+    '</tt>'  => '"',
+    '<pre>'  => '',
+    '</pre>' => "\n\n",
 
-            '<h1>'   => "\n----\n'''",
-            '</h1>'  => "'''\n\n",
-            '<h2>'   => "\n'''''",
-            '</h2>'  => "'''''\n\n",
-            '<h3>'   => "\n''",
-            '</h3>'  => "''\n\n",
-            '<h4>'   => "\n",
-            '</h4>'  => "\n\n",
-           };
+    '<h1>'  => "\n----\n'''",
+    '</h1>' => "'''\n\n",
+    '<h2>'  => "\n'''''",
+    '</h2>' => "'''''\n\n",
+    '<h3>'  => "\n''",
+    '</h3>' => "''\n\n",
+    '<h4>'  => "\n",
+    '</h4>' => "\n\n",
+};
 
 
 ###############################################################################
@@ -52,36 +55,36 @@ my $tags = {
 #
 sub new {
 
-    my $class                   = shift;
-    my $format                  = lc shift || 'wiki';
-       $format                  = 'mediawiki' if $format eq 'wikipedia';
-       $format                  = 'moinmoin'  if $format eq 'moin';
+    my $class = shift;
+    my $format = lc shift || 'wiki';
+    $format = 'mediawiki' if $format eq 'wikipedia';
+    $format = 'moinmoin'  if $format eq 'moin';
 
-    my $module                  = "Pod::Simple::Wiki::" . ucfirst $format;
+    my $module = "Pod::Simple::Wiki::" . ucfirst $format;
 
     # Try to load a sub-module unless the format type is 'wiki' in which
     # case we use this, the parent, module. It's a design pattern, bitches!
-    if ($format ne 'wiki') {
+    if ( $format ne 'wiki' ) {
         eval "require $module";
         die "Module $module not implemented for wiki format $format\n" if $@;
-        return $module->new(@_);
+        return $module->new( @_ );
     }
 
-    my $self                    = Pod::Simple->new(@_);
-       $self->{_wiki_text}      = '';
-       $self->{_tags}           = $tags;
-       $self->{output_fh}     ||= *STDOUT{IO};
-       $self->{_item_indent}    = 0;
-       $self->{_debug}          = 0;
+    my $self = Pod::Simple->new( @_ );
+    $self->{_wiki_text} = '';
+    $self->{_tags}      = $tags;
+    $self->{output_fh} ||= *STDOUT{IO};
+    $self->{_item_indent} = 0;
+    $self->{_debug}       = 0;
 
     # Set Pod::Simple parser options
     # - Merge contiguous text        RT#60304
-    $self->merge_text(1);
+    $self->merge_text( 1 );
 
     # - Ignore X<>  (index entries)  RT#60307
-    $self->nix_X_codes(1);
+    $self->nix_X_codes( 1 );
 
-    bless  $self, $class;
+    bless $self, $class;
     return $self;
 }
 
@@ -129,7 +132,7 @@ sub _output {
 
     $text = '' unless defined $text;
 
-    print {$self->{output_fh}} $self->{_wiki_text}, $text;
+    print { $self->{output_fh} } $self->{_wiki_text}, $text;
 
     $self->{_wiki_text} = '';
 }
@@ -148,16 +151,17 @@ sub _indent_item {
     my $item_param   = $_[1];
     my $indent_level = $self->{_item_indent};
 
-    if    ($item_type eq 'bullet') {
-         $self->_append("*" x $indent_level);
-         # This was the way C2 Wiki used to define a bullet list
-         # $self->_append("\t" x $indent_level . '*');
+    if ( $item_type eq 'bullet' ) {
+        $self->_append( "*" x $indent_level );
+
+        # This was the way C2 Wiki used to define a bullet list
+        # $self->_append("\t" x $indent_level . '*');
     }
-    elsif ($item_type eq 'number') {
-         $self->_append("\t" x $indent_level . $item_param);
+    elsif ( $item_type eq 'number' ) {
+        $self->_append( "\t" x $indent_level . $item_param );
     }
-    elsif ($item_type eq 'text') {
-         $self->_append("\t" x $indent_level);
+    elsif ( $item_type eq 'text' ) {
+        $self->_append( "\t" x $indent_level );
     }
 }
 
@@ -187,7 +191,7 @@ sub _append_tag {
     my $self = shift;
     my $tag  = $_[0];
 
-    $self->_append($self->{_tags}->{$tag});
+    $self->_append( $self->{_tags}->{$tag} );
 }
 
 
@@ -219,14 +223,14 @@ sub _handle_element_start {
 
     $element =~ tr/-/_/;
 
-    if ($self->{_debug}) {
-        print '    ' x  $self->{_item_indent}, "<$element>\n";
+    if ( $self->{_debug} ) {
+        print '    ' x $self->{_item_indent}, "<$element>\n";
     }
 
-    $self->{"_in_". $element}++;
+    $self->{ "_in_" . $element }++;
 
-    if (my $method = $self->can('_start_' . $element)) {
-        $method->($self, $_[1]);
+    if ( my $method = $self->can( '_start_' . $element ) ) {
+        $method->( $self, $_[1] );
     }
 }
 
@@ -245,14 +249,14 @@ sub _handle_element_end {
 
     $element =~ tr/-/_/;
 
-    if (my $method = $self->can('_end_' . $element)) {
-        $method->($self);
+    if ( my $method = $self->can( '_end_' . $element ) ) {
+        $method->( $self );
     }
 
-    $self->{"_in_". $element}--;
+    $self->{ "_in_" . $element }--;
 
-    if ($self->{_debug}) {
-        print "\n", '    ' x  $self->{_item_indent}, "</$element>\n\n";
+    if ( $self->{_debug} ) {
+        print "\n", '    ' x $self->{_item_indent}, "</$element>\n\n";
     }
 }
 
@@ -272,10 +276,10 @@ sub _handle_text {
     # Split the text into tokens but maintain the whitespace
     my @tokens = split /(\s+)/, $text;
 
-    for (@tokens) {
-        next unless /\S/;                    # Ignore the whitespace
-        next if m[^(ht|f)tp://];             # Ignore URLs
-        s/([A-Z][a-z]+)(?=[A-Z])/$1''''''/g  # Escape with 6 single quotes
+    for ( @tokens ) {
+        next unless /\S/;    # Ignore the whitespace
+        next if m[^(ht|f)tp://];    # Ignore URLs
+        s/([A-Z][a-z]+)(?=[A-Z])/$1''''''/g    # Escape with 6 single quotes
 
     }
 
@@ -288,30 +292,30 @@ sub _handle_text {
 #
 # Functions to deal with the I<>, B<> and C<> formatting codes.
 #
-sub _start_I  {$_[0]->_append_tag('<i>')   unless $_[0]->_skip_headings()}
-sub _start_B  {$_[0]->_append_tag('<b>')   unless $_[0]->_skip_headings()}
-sub _start_C  {$_[0]->_append_tag('<tt>')  unless $_[0]->_skip_headings()}
-sub _start_F  {$_[0]->_start_I}
+sub _start_I { $_[0]->_append_tag( '<i>' )  unless $_[0]->_skip_headings() }
+sub _start_B { $_[0]->_append_tag( '<b>' )  unless $_[0]->_skip_headings() }
+sub _start_C { $_[0]->_append_tag( '<tt>' ) unless $_[0]->_skip_headings() }
+sub _start_F { $_[0]->_start_I }
 
-sub _end_I    {$_[0]->_append_tag('</i>')  unless $_[0]->_skip_headings()}
-sub _end_B    {$_[0]->_append_tag('</b>')  unless $_[0]->_skip_headings()}
-sub _end_C    {$_[0]->_append_tag('</tt>') unless $_[0]->_skip_headings()}
-sub _end_F    {$_[0]->_end_I}
+sub _end_I { $_[0]->_append_tag( '</i>' )  unless $_[0]->_skip_headings() }
+sub _end_B { $_[0]->_append_tag( '</b>' )  unless $_[0]->_skip_headings() }
+sub _end_C { $_[0]->_append_tag( '</tt>' ) unless $_[0]->_skip_headings() }
+sub _end_F { $_[0]->_end_I }
 
 
 ###############################################################################
 #
 # Functions to deal with the Pod =head directives
 #
-sub _start_head1 {$_[0]->_append_tag('<h1>')}
-sub _start_head2 {$_[0]->_append_tag('<h2>')}
-sub _start_head3 {$_[0]->_append_tag('<h3>')}
-sub _start_head4 {$_[0]->_append_tag('<h4>')}
+sub _start_head1 { $_[0]->_append_tag( '<h1>' ) }
+sub _start_head2 { $_[0]->_append_tag( '<h2>' ) }
+sub _start_head3 { $_[0]->_append_tag( '<h3>' ) }
+sub _start_head4 { $_[0]->_append_tag( '<h4>' ) }
 
-sub _end_head1   {$_[0]->_append_tag('</h1>'); $_[0]->_output()}
-sub _end_head2   {$_[0]->_append_tag('</h2>'); $_[0]->_output()}
-sub _end_head3   {$_[0]->_append_tag('</h3>'); $_[0]->_output()}
-sub _end_head4   {$_[0]->_append_tag('</h4>'); $_[0]->_output()}
+sub _end_head1 { $_[0]->_append_tag( '</h1>' ); $_[0]->_output() }
+sub _end_head2 { $_[0]->_append_tag( '</h2>' ); $_[0]->_output() }
+sub _end_head3 { $_[0]->_append_tag( '</h3>' ); $_[0]->_output() }
+sub _end_head4 { $_[0]->_append_tag( '</h4>' ); $_[0]->_output() }
 
 
 ###############################################################################
@@ -319,8 +323,8 @@ sub _end_head4   {$_[0]->_append_tag('</h4>'); $_[0]->_output()}
 # Functions to deal with verbatim paragraphs. We emit the text "as is" for now.
 # TODO: escape any Wiki formatting in text such as ''code''.
 #
-sub _start_Verbatim {$_[0]->_append_tag('<pre>')}
-sub _end_Verbatim   {$_[0]->_append_tag('</pre>'); $_[0]->_output()}
+sub _start_Verbatim { $_[0]->_append_tag( '<pre>' ) }
+sub _end_Verbatim { $_[0]->_append_tag( '</pre>' ); $_[0]->_output() }
 
 
 ###############################################################################
@@ -332,30 +336,36 @@ sub _end_Verbatim   {$_[0]->_append_tag('</pre>'); $_[0]->_output()}
 # Text     lists
 # Block    lists
 #
-sub _start_over_bullet {$_[0]->{_item_indent}++}
-sub _start_over_number {$_[0]->{_item_indent}++}
-sub _start_over_text   {$_[0]->{_item_indent}++}
+sub _start_over_bullet { $_[0]->{_item_indent}++ }
+sub _start_over_number { $_[0]->{_item_indent}++ }
+sub _start_over_text   { $_[0]->{_item_indent}++ }
 
-sub _end_over_bullet   {$_[0]->{_item_indent}--;
-                        $_[0]->_output("\n") unless $_[0]->{_item_indent}}
+sub _end_over_bullet {
+    $_[0]->{_item_indent}--;
+    $_[0]->_output( "\n" ) unless $_[0]->{_item_indent};
+}
 
-sub _end_over_number   {$_[0]->{_item_indent}--;
-                        $_[0]->_output("\n") unless $_[0]->{_item_indent}}
+sub _end_over_number {
+    $_[0]->{_item_indent}--;
+    $_[0]->_output( "\n" ) unless $_[0]->{_item_indent};
+}
 
-sub _end_over_text     {$_[0]->{_item_indent}--;
-                        $_[0]->_output("\n") unless $_[0]->{_item_indent}}
+sub _end_over_text {
+    $_[0]->{_item_indent}--;
+    $_[0]->_output( "\n" ) unless $_[0]->{_item_indent};
+}
 
-sub _start_item_bullet {$_[0]->_indent_item('bullet')}
-sub _start_item_number {$_[0]->_indent_item('number', $_[1]->{number})}
-sub _start_item_text   {$_[0]->_indent_item('text')}
+sub _start_item_bullet { $_[0]->_indent_item( 'bullet' ) }
+sub _start_item_number { $_[0]->_indent_item( 'number', $_[1]->{number} ) }
+sub _start_item_text   { $_[0]->_indent_item( 'text' ) }
 
-sub _end_item_bullet   {$_[0]->_output("\n")}
-sub _end_item_number   {$_[0]->_output("\n")}
+sub _end_item_bullet { $_[0]->_output( "\n" ) }
+sub _end_item_number { $_[0]->_output( "\n" ) }
 
-sub _end_item_text     {$_[0]->_output(":\t")} # Format specific.
+sub _end_item_text { $_[0]->_output( ":\t" ) }    # Format specific.
 
-sub _start_over_block  {$_[0]->{_item_indent}++}
-sub _end_over_block    {$_[0]->{_item_indent}--}
+sub _start_over_block { $_[0]->{_item_indent}++ }
+sub _end_over_block   { $_[0]->{_item_indent}-- }
 
 
 ###############################################################################
@@ -369,8 +379,8 @@ sub _start_Para {
     my $self         = shift;
     my $indent_level = $self->{_item_indent};
 
-    if ($self->{_in_over_block}) {
-        $self->_append(("\t" x $indent_level) . " :\t");
+    if ( $self->{_in_over_block} ) {
+        $self->_append( ( "\t" x $indent_level ) . " :\t" );
     }
 }
 
@@ -386,14 +396,15 @@ sub _end_Para {
     my $self = shift;
 
     # Only add a newline if the paragraph isn't part of a text
-    if ($self->{_in_over_text}) {
+    if ( $self->{_in_over_text} ) {
+
         # Do nothing in this format.
     }
     else {
-        $self->_output("\n");
+        $self->_output( "\n" );
     }
 
-    $self->_output("\n")
+    $self->_output( "\n" );
 }
 
 
@@ -403,41 +414,48 @@ sub _end_Para {
 __END__
 
 
+=pod
+
+=encoding utf8
+
 =head1 NAME
 
 Pod::Simple::Wiki - A class for creating Pod to Wiki filters.
 
 =head1 VERSION
 
-This document refers to version 0.09 of Pod::Simple::Wiki, released May 24 2008.
+This document refers to version 0.15 of Pod::Simple::Wiki, released October 14 2012.
 
 
 =head1 SYNOPSIS
 
 To create a simple filter to convert from Pod to a wiki format:
 
-    #!/usr/bin/perl -w
+    #!/usr/bin/perl
 
     use strict;
+    use warnings;
     use Pod::Simple::Wiki;
 
 
     my $parser = Pod::Simple::Wiki->new('kwiki');
 
-    if (defined $ARGV[0]) {
-        open IN, $ARGV[0]  or die "Couldn't open $ARGV[0]: $!\n";
-    } else {
+    if ( defined $ARGV[0] ) {
+        open IN, $ARGV[0] or die "Couldn't open $ARGV[0]: $!\n";
+    }
+    else {
         *IN = *STDIN;
     }
 
-    if (defined $ARGV[1]) {
+    if ( defined $ARGV[1] ) {
         open OUT, ">$ARGV[1]" or die "Couldn't open $ARGV[1]: $!\n";
-    } else {
+    }
+    else {
         *OUT = *STDOUT;
     }
 
-    $parser->output_fh(*OUT);
-    $parser->parse_file(*IN);
+    $parser->output_fh( *OUT );
+    $parser->parse_file( *IN );
 
     __END__
 
@@ -453,7 +471,7 @@ The C<Pod::Simple::Wiki> module is used for converting Pod text to Wiki text.
 
 Pod (Plain Old Documentation) is a simple markup language used for writing Perl documentation.
 
-A Wiki is a user extensible web site. It uses very simple mark-up that is converted to Html. For an introduction to Wikis see: http://en.wikipedia.org/wiki/Wiki
+A Wiki is a user extensible web site. It uses very simple mark-up that is converted to Html. For an introduction to Wikis see: L<http://en.wikipedia.org/wiki/Wiki>
 
 
 =head1 METHODS
@@ -462,9 +480,9 @@ A Wiki is a user extensible web site. It uses very simple mark-up that is conver
 
 The C<new> method is used to create a new C<Pod::Simple::Wiki> object. It is also used to set the output Wiki format.
 
-  my $parser1 = Pod::Simple::Wiki->new('wiki');
-  my $parser2 = Pod::Simple::Wiki->new('mediawiki');
-  my $parser3 = Pod::Simple::Wiki->new(); # Defaults to 'wiki'
+    my $parser1 = Pod::Simple::Wiki->new( 'wiki' );
+    my $parser2 = Pod::Simple::Wiki->new( 'mediawiki' );
+    my $parser3 = Pod::Simple::Wiki->new(); # Defaults to 'wiki'
 
 The currently supported formats are:
 
@@ -492,39 +510,39 @@ The following wiki formats are supported by C<Pod::Simple::Wiki>:
 
 =item wiki
 
-This is the original Wiki format as used on Ward Cunningham's Portland repository of Patterns. See http://c2.com/cgi/wiki
+This is the original Wiki format as used on Ward Cunningham's Portland repository of Patterns. See L<http://c2.com/cgi/wiki>.
 
 =item kwiki
 
-This is the format as used by Brian Ingerson's Kwiki: http://www.kwiki.org
+This is the format as used by Brian Ingerson's Kwiki: L<http://www.kwiki.org>.
 
 =item usemod
 
-This is the format used by the Usemod wikis. See: http://www.usemod.com/cgi-bin/wiki.pl
+This is the format used by the Usemod wikis. See: L<http://www.usemod.com/cgi-bin/wiki.pl>.
 
 =item twiki
 
-This is the format used by TWiki wikis.  See: http://twiki.org/
+This is the format used by TWiki wikis.  See: L<http://twiki.org/>.
 
 =item tiddlywiki
 
-This is the format used by the TiddlyWiki.  See: http://www.tiddlywiki.com/
+This is the format used by the TiddlyWiki.  See: L<http://www.tiddlywiki.com/>.
 
 =item textile
 
-The Textile markup format as used on GitHub. See: http://textile.thresholdstate.com/
+The Textile markup format as used on GitHub. See: L<http://textile.thresholdstate.com/>.
 
 =item wikipedia or mediawiki
 
-This is the format used by Wikipedia and MediaWiki wikis.  See: http://www.mediawiki.org/
+This is the format used by Wikipedia and MediaWiki wikis.  See: L<http://www.mediawiki.org/>.
 
 =item moinmoin
 
-This is the format used by MoinMoin wikis.  See: http://moinmo.in/MoinMoinWiki
+This is the format used by MoinMoin wikis.  See: L<http://moinmo.in/MoinMoinWiki>.
 
 =item confluence
 
-This is the format used by Confluence.  See: http://www.atlassian.com/software/confluence/
+This is the format used by Confluence.  See: L<http://www.atlassian.com/software/confluence/>.
 
 =back
 
@@ -537,7 +555,7 @@ Any other parameters in C<new> will be passed on to the parent C<Pod::Simple> ob
 
 If you are interested in porting a new wiki format have a look at L<Pod::Simple::Wiki::Template>.
 
-The C<Pod::Simple::Wiki> git repository is: http://github.com/jmcnamara/pod-simple-wiki/
+The C<Pod::Simple::Wiki> git repository is: L<http://github.com/jmcnamara/pod-simple-wiki/>.
 
 =head1 SEE ALSO
 
@@ -569,10 +587,11 @@ Thanks to Christopher J. Madsen for several MediaWiki additions and tests.
 
 Thanks Tim Bunce for the TiddlyWiki prod and Ron Savage for the port.
 
-Thanks to Olivier 'dolmen' Mengué for various TiddlyWiki patches.
+Thanks to Olivier 'dolmen' MenguE<eacute> for various TiddlyWiki patches.
 
 Thanks to David Bartle, Andrew Hobbs and Jim Renwick for confluence patches.
 
+Thanks to Peter Hallam for MediaWiki enhancements.
 
 =head1 DISCLAIMER OF WARRANTY
 
@@ -583,7 +602,7 @@ In no event unless required by applicable law or agreed to in writing will any c
 
 =head1 LICENSE
 
-Either the Perl Artistic Licence http://dev.perl.org/licenses/artistic.html or the GPL http://www.opensource.org/licenses/gpl-license.php
+Either the Perl Artistic Licence L<http://dev.perl.org/licenses/artistic.html> or the GPL L<http://www.opensource.org/licenses/gpl-license.php>.
 
 
 =head1 AUTHOR
@@ -593,6 +612,6 @@ John McNamara jmcnamara@cpan.org
 
 =head1 COPYRIGHT
 
-MMIII-MMX, John McNamara.
+MMIII-MMVII, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.

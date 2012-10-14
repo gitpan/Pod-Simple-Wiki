@@ -5,10 +5,12 @@ package Pod::Simple::Wiki::Textile;
 # Pod::Simple::Wiki::Textile - A class for creating Pod to Textile filters.
 #
 #
-# Copyright 2003-2008, John McNamara, jmcnamara@cpan.org
+# Copyright 2003-2012, John McNamara, jmcnamara@cpan.org
 #
 # Documentation after __END__
 #
+
+# perltidy with the following options: -mbl=2 -pt=0 -nola
 
 use Pod::Simple::Wiki;
 use strict;
@@ -16,31 +18,31 @@ use vars qw(@ISA $VERSION);
 
 
 @ISA     = qw(Pod::Simple::Wiki);
-$VERSION = '0.08';
+$VERSION = '0.15';
 
 ###############################################################################
 #
 # The tag to wiki mappings.
 #
 my $tags = {
-            '<b>'    => '*',
-            '</b>'   => '*',
-            '<i>'    => '_',
-            '</i>'   => '_',
-            '<tt>'   => '@',
-            '</tt>'  => '@',
-            '<pre>'  => "<pre>\n",
-            '</pre>' => "\n</pre>\n\n",
+    '<b>'    => '*',
+    '</b>'   => '*',
+    '<i>'    => '_',
+    '</i>'   => '_',
+    '<tt>'   => '@',
+    '</tt>'  => '@',
+    '<pre>'  => "<pre>\n",
+    '</pre>' => "\n</pre>\n\n",
 
-            '<h1>'   => 'h1. ',
-            '</h1>'  => "\n\n",
-            '<h2>'   => 'h2. ',
-            '</h2>'  => "\n\n",
-            '<h3>'   => 'h3. ',
-            '</h3>'  => "\n\n",
-            '<h4>'   => 'h4. ',
-            '</h4>'  => "\n\n",
-           };
+    '<h1>'  => 'h1. ',
+    '</h1>' => "\n\n",
+    '<h2>'  => 'h2. ',
+    '</h2>' => "\n\n",
+    '<h3>'  => 'h3. ',
+    '</h3>' => "\n\n",
+    '<h4>'  => 'h4. ',
+    '</h4>' => "\n\n",
+};
 
 
 ###############################################################################
@@ -51,11 +53,11 @@ my $tags = {
 #
 sub new {
 
-    my $class                   = shift;
-    my $self                    = Pod::Simple::Wiki->new('wiki', @_);
-       $self->{_tags}           = $tags;
+    my $class = shift;
+    my $self = Pod::Simple::Wiki->new( 'wiki', @_ );
+    $self->{_tags} = $tags;
 
-    bless  $self, $class;
+    bless $self, $class;
     return $self;
 }
 
@@ -73,14 +75,14 @@ sub _indent_item {
     my $item_param   = $_[1];
     my $indent_level = $self->{_item_indent};
 
-    if    ($item_type eq 'bullet') {
-         $self->_append('*' x $indent_level . ' ');
+    if ( $item_type eq 'bullet' ) {
+        $self->_append( '*' x $indent_level . ' ' );
     }
-    elsif ($item_type eq 'number') {
-         $self->_append('#' x $indent_level . ' ');
+    elsif ( $item_type eq 'number' ) {
+        $self->_append( '#' x $indent_level . ' ' );
     }
-    elsif ($item_type eq 'text') {
-         $self->_append('- ');
+    elsif ( $item_type eq 'text' ) {
+        $self->_append( '- ' );
     }
 }
 
@@ -98,7 +100,7 @@ sub _handle_text {
     my $text = $_[0];
 
     # Only escape words in paragraphs
-    if (not $self->{_in_Para}) {
+    if ( not $self->{_in_Para} ) {
         $self->{_wiki_text} .= $text;
         return;
     }
@@ -122,7 +124,7 @@ sub _handle_text {
 # Text     lists
 # Block    lists
 #
-sub _end_item_text     {$_[0]->_output(' := ')}
+sub _end_item_text { $_[0]->_output( ' := ' ) }
 
 
 ###############################################################################
@@ -136,8 +138,8 @@ sub _start_Para {
     my $self         = shift;
     my $indent_level = $self->{_item_indent};
 
-    if ($self->{_in_over_block}) {
-        $self->_append('bq.. ');
+    if ( $self->{_in_over_block} ) {
+        $self->_append( 'bq.. ' );
     }
 }
 
@@ -178,7 +180,7 @@ The C<Pod::Simple::Wiki::Textile> module is used for converting Pod text to Wiki
 
 Pod (Plain Old Documentation) is a simple markup language used for writing Perl documentation.
 
-For an introduction to Textile see: http://textile.thresholdstate.com/
+For an introduction to Textile see: L<http://textile.thresholdstate.com/>
 
 This module isn't generally invoked directly. Instead it is called via C<Pod::Simple::Wiki>. See the L<Pod::Simple::Wiki> and L<pod2wiki> documentation for more information.
 
@@ -205,6 +207,6 @@ John McNamara jmcnamara@cpan.org
 
 =head1 COPYRIGHT
 
-MMIII-MMVIII, John McNamara.
+MMIII-MMXII, John McNamara.
 
 All Rights Reserved. This module is free software. It may be used, redistributed and/or modified under the same terms as Perl itself.
